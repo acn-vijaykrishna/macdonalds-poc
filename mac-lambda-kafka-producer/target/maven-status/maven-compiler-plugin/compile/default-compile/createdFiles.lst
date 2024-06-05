@@ -1,0 +1,5 @@
+com/mac/S3EventDeserializer.class
+com/mac/OtherProcessor.class
+com/mac/S3Processor.class
+com/mac/Client.class
+com/mac/KafkaProducerLambda.class

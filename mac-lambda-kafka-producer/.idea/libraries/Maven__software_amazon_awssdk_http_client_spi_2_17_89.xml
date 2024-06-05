@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: software.amazon.awssdk:http-client-spi:2.17.89">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/software/amazon/awssdk/http-client-spi/2.17.89/http-client-spi-2.17.89.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/software/amazon/awssdk/http-client-spi/2.17.89/http-client-spi-2.17.89-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/software/amazon/awssdk/http-client-spi/2.17.89/http-client-spi-2.17.89-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
