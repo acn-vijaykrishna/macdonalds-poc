@@ -52,18 +52,17 @@ public class S3Processor {
 
             context.getLogger().log("BucketName and ObjectKey" + bucketName + objectKey);
             // Read file content from S3
-            String fileContent = null;
-            try {
-                fileContent = readS3Object(bucketName, objectKey);
-                context.getLogger().log("fileContent : " + ReadXML.readXml());
-            } catch (Exception e) {
-                context.getLogger().log("Error reading S3 object: " + e.getMessage());
-                context.getLogger().log("Exception reading S3 object: " + e);
+        //String fileContent = null;
+        //try {
+        //    fileContent = readS3Object(bucketName, objectKey);
+        // } catch (Exception e) {
+        //    context.getLogger().log("Error reading S3 object: " + e.getMessage());
+        //    context.getLogger().log("Exception reading S3 object: " + e);
 //                break;
-            }
+        //  }
 //            String message = parseMessage(fileContent);
-            context.getLogger().log("FileContent:" + fileContent);
-            ProducerRecord<String, String> kafkaRecord = new ProducerRecord<>(TOPIC_NAME, KEY, fileContent);
+//            context.getLogger().log("FileContent:" + XMLReader.read());
+            ProducerRecord<String, String> kafkaRecord = new ProducerRecord<>(TOPIC_NAME, KEY, XMLReader.read());
 
             try {
                 Future<RecordMetadata> future = producer.send(kafkaRecord, (metadata, exception) -> {

@@ -22,8 +22,8 @@ import java.util.UUID;
 
 public class KafkaLambdaHandler implements RequestHandler<Object, String> {
 
-    private static final String TOPIC_NAME = "mac_pos";
-    private static final String GROUP_ID = "mac-pos-001";
+    private static final String TOPIC_NAME = "raw_restaurant_transaction";
+    private static final String GROUP_ID = "mcd-raw-001";
 
     // Adjust region as needed
     DynamoDb dynamoDb = new DynamoDb();
@@ -56,7 +56,8 @@ public class KafkaLambdaHandler implements RequestHandler<Object, String> {
                 System.out.println("record new==>" + record.value());
 
                 //Writting record to DynamoDb
-                writeToDb(record.value());
+//                writeToDb(record.value());
+                writeStringToDb(XMLToJsonConverter.convert(record.value()));
 
                 messages.append("Received message: ").append(record.value()).append("\n");
             }
@@ -94,6 +95,15 @@ public class KafkaLambdaHandler implements RequestHandler<Object, String> {
     }
 
     private void writeToDb(String record) {
+        Gson gson = new GsonBuilder().create();
+        JsonObject jsonObject = gson.fromJson(record, JsonObject.class);
+        UUID uuid = UUID.randomUUID();
+        jsonObject.addProperty("event_id", uuid.toString());
+        dynamoDb.writeToDynamoDB(jsonObject);
+
+    }
+
+    private void writeStringToDb(String record) {
         Gson gson = new GsonBuilder().create();
         JsonObject jsonObject = gson.fromJson(record, JsonObject.class);
         UUID uuid = UUID.randomUUID();
