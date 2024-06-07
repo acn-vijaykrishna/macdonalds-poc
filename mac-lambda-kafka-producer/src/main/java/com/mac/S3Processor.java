@@ -26,10 +26,10 @@ import java.util.concurrent.Future;
  */
 public class S3Processor {
 
-    private static final String TOPIC_NAME = "mac_pos";
+    private static final String TOPIC_NAME = "raw_restaurant_transaction";
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private static final String KEY = "S3-Event";
+    private static final String KEY = "001";
 
 
     public String processS3Event(S3Event s3Event, Context context) {
@@ -43,18 +43,23 @@ public class S3Processor {
         }
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(props);
+        context.getLogger().log("producer : " + producer);
+//        for (S3EventNotification.S3EventNotificationRecord record : s3Event.getRecords()) {
+            //String bucketName = record.getS3().getBucket().getName();
+            //String objectKey = record.getS3().getObject().getKey();
+        String bucketName = "macdposstore";
+        String objectKey = "POS_store-db_FR_1000_20240511_1.20240511021353.xml";
 
-        for (S3EventNotification.S3EventNotificationRecord record : s3Event.getRecords()) {
-            String bucketName = record.getS3().getBucket().getName();
-            String objectKey = record.getS3().getObject().getKey();
-            context.getLogger().log("BucketName :{} and ObjectKey: {}" + bucketName + objectKey);
+            context.getLogger().log("BucketName and ObjectKey" + bucketName + objectKey);
             // Read file content from S3
-            String fileContent;
+            String fileContent = null;
             try {
                 fileContent = readS3Object(bucketName, objectKey);
+                context.getLogger().log("fileContent : " + ReadXML.readXml());
             } catch (Exception e) {
                 context.getLogger().log("Error reading S3 object: " + e.getMessage());
-                break;
+                context.getLogger().log("Exception reading S3 object: " + e);
+//                break;
             }
 //            String message = parseMessage(fileContent);
             context.getLogger().log("FileContent:" + fileContent);
@@ -73,9 +78,9 @@ public class S3Processor {
 
             } catch (Exception e) {
                 context.getLogger().log("Error producing messages: " + e.getMessage());
-                break;
+//                break;
             }
-        }
+//        }
 
         return "Processed S3 event and sent to Kafka topic: " + TOPIC_NAME;
     }

@@ -17,7 +17,7 @@ import java.util.Map;
  * Kafka Producer as Lambda Function Build to support s3 event and lambda test function events
  */
 public class KafkaProducerLambda implements RequestHandler<Object, String> {
-    private static final String TOPIC_NAME = "mac_pos";
+
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Override
@@ -45,10 +45,11 @@ public class KafkaProducerLambda implements RequestHandler<Object, String> {
                 String jsonString = objectMapper.writeValueAsString(input);
 
                 // Deserialize the JSON string to S3Event
-                S3Event s3Event = objectMapper.readValue(jsonString, S3Event.class);
+//                S3Event s3Event = objectMapper.readValue(jsonString, S3Event.class);
+                S3Event s3Event = new S3Event();
 
                 // Process the S3Event
-                context.getLogger().log("s3Event: " + s3Event);
+//                context.getLogger().log("s3Event: " + s3Event);
 //                LinkedHashMap<String, Object> inputMap = (LinkedHashMap<String, Object>) input;
 //                Gson gson = new GsonBuilder().create();
 //                // Convert inputMap to JSON string
