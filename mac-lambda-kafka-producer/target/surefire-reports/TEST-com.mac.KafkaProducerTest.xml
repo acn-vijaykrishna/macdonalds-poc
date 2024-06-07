@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.mac.KafkaProducerTest" time="3.574" tests="1" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.specification.version" value="21"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.class.path" value="C:\Users\naga.vijaya.krishna\IdeaProjects\macdonalds-poc\mac-lambda-kafka-producer\target\test-classes;C:\Users\naga.vijaya.krishna\IdeaProjects\macdonalds-poc\mac-lambda-kafka-producer\target\classes;C:\Users\naga.vijaya.krishna\.m2\repository\com\amazonaws\aws-lambda-java-core\1.2.1\aws-lambda-java-core-1.2.1.jar;C:\Users\naga.vijaya.krishna\.m2\repository\com\amazonaws\aws-lambda-java-events\3.10.0\aws-lambda-java-events-3.10.0.jar;C:\Users\naga.vijaya.krishna\.m2\repository\joda-time\joda-time\2.6\joda-time-2.6.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\apache\kafka\kafka-clients\3.0.0\kafka-clients-3.0.0.jar;C:\Users\naga.vijaya.krishna\.m2\repository\com\github\luben\zstd-jni\1.5.0-2\zstd-jni-1.5.0-2.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\lz4\lz4-java\1.7.1\lz4-java-1.7.1.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\xerial\snappy\snappy-java\1.1.8.1\snappy-java-1.1.8.1.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\slf4j\slf4j-api\1.7.30\slf4j-api-1.7.30.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\slf4j\slf4j-simple\1.7.32\slf4j-simple-1.7.32.jar;C:\Users\naga.vijaya.krishna\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.12.3\jackson-databind-2.12.3.jar;C:\Users\naga.vijaya.krishna\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.12.3\jackson-annotations-2.12.3.jar;C:\Users\naga.vijaya.krishna\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.12.3\jackson-core-2.12.3.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.7.0\junit-jupiter-api-5.7.0.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\apiguardian\apiguardian-api\1.1.0\apiguardian-api-1.1.0.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\junit\platform\junit-platform-commons\1.7.0\junit-platform-commons-1.7.0.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\json\json\20210307\json-20210307.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.7.0\junit-jupiter-engine-5.7.0.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\junit\platform\junit-platform-engine\1.7.0\junit-platform-engine-1.7.0.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\s3\2.17.89\s3-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\aws-xml-protocol\2.17.89\aws-xml-protocol-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\aws-query-protocol\2.17.89\aws-query-protocol-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\protocol-core\2.17.89\protocol-core-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\arns\2.17.89\arns-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\profiles\2.17.89\profiles-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\sdk-core\2.17.89\sdk-core-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\reactivestreams\reactive-streams\1.0.3\reactive-streams-1.0.3.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\auth\2.17.89\auth-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\json-utils\2.17.89\json-utils-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\third-party-jackson-core\2.17.89\third-party-jackson-core-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\eventstream\eventstream\1.0.1\eventstream-1.0.1.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\http-client-spi\2.17.89\http-client-spi-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\regions\2.17.89\regions-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\annotations\2.17.89\annotations-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\utils\2.17.89\utils-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\aws-core\2.17.89\aws-core-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\metrics-spi\2.17.89\metrics-spi-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\apache-client\2.17.89\apache-client-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\apache\httpcomponents\httpclient\4.5.13\httpclient-4.5.13.jar;C:\Users\naga.vijaya.krishna\.m2\repository\commons-logging\commons-logging\1.2\commons-logging-1.2.jar;C:\Users\naga.vijaya.krishna\.m2\repository\commons-codec\commons-codec\1.11\commons-codec-1.11.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\apache\httpcomponents\httpcore\4.4.11\httpcore-4.4.11.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\netty-nio-client\2.17.89\netty-nio-client-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-codec-http\4.1.68.Final\netty-codec-http-4.1.68.Final.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-codec-http2\4.1.68.Final\netty-codec-http2-4.1.68.Final.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-codec\4.1.68.Final\netty-codec-4.1.68.Final.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-transport\4.1.68.Final\netty-transport-4.1.68.Final.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-resolver\4.1.68.Final\netty-resolver-4.1.68.Final.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-common\4.1.68.Final\netty-common-4.1.68.Final.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-buffer\4.1.68.Final\netty-buffer-4.1.68.Final.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-handler\4.1.68.Final\netty-handler-4.1.68.Final.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-transport-native-epoll\4.1.68.Final\netty-transport-native-epoll-4.1.68.Final-linux-x86_64.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-transport-native-unix-common\4.1.68.Final\netty-transport-native-unix-common-4.1.68.Final.jar;C:\Users\naga.vijaya.krishna\.m2\repository\com\typesafe\netty\netty-reactive-streams-http\2.0.5\netty-reactive-streams-http-2.0.5.jar;C:\Users\naga.vijaya.krishna\.m2\repository\com\typesafe\netty\netty-reactive-streams\2.0.5\netty-reactive-streams-2.0.5.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\mockito\mockito-core\3.7.7\mockito-core-3.7.7.jar;C:\Users\naga.vijaya.krishna\.m2\repository\net\bytebuddy\byte-buddy\1.10.19\byte-buddy-1.10.19.jar;C:\Users\naga.vijaya.krishna\.m2\repository\net\bytebuddy\byte-buddy-agent\1.10.19\byte-buddy-agent-1.10.19.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\objenesis\objenesis\3.1\objenesis-3.1.jar;C:\Users\naga.vijaya.krishna\.m2\repository\com\google\code\gson\gson\2.8.9\gson-2.8.9.jar;"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="user.timezone" value="America/Chicago"/>
+    <property name="os.name" value="Windows 11"/>
+    <property name="java.vm.specification.version" value="21"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="US"/>
+    <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-21\bin"/>
+    <property name="sun.java.command" value="C:\Users\naga.vijaya.krishna\AppData\Local\Temp\surefire4014513541413447233\surefirebooter-20240607100629129_3.jar C:\Users\naga.vijaya.krishna\AppData\Local\Temp\surefire4014513541413447233 2024-06-07T10-06-28_847-jvmRun1 surefire-20240607100629129_1tmp surefire_0-20240607100629129_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="C:\Users\naga.vijaya.krishna\IdeaProjects\macdonalds-poc\mac-lambda-kafka-producer\target\test-classes;C:\Users\naga.vijaya.krishna\IdeaProjects\macdonalds-poc\mac-lambda-kafka-producer\target\classes;C:\Users\naga.vijaya.krishna\.m2\repository\com\amazonaws\aws-lambda-java-core\1.2.1\aws-lambda-java-core-1.2.1.jar;C:\Users\naga.vijaya.krishna\.m2\repository\com\amazonaws\aws-lambda-java-events\3.10.0\aws-lambda-java-events-3.10.0.jar;C:\Users\naga.vijaya.krishna\.m2\repository\joda-time\joda-time\2.6\joda-time-2.6.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\apache\kafka\kafka-clients\3.0.0\kafka-clients-3.0.0.jar;C:\Users\naga.vijaya.krishna\.m2\repository\com\github\luben\zstd-jni\1.5.0-2\zstd-jni-1.5.0-2.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\lz4\lz4-java\1.7.1\lz4-java-1.7.1.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\xerial\snappy\snappy-java\1.1.8.1\snappy-java-1.1.8.1.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\slf4j\slf4j-api\1.7.30\slf4j-api-1.7.30.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\slf4j\slf4j-simple\1.7.32\slf4j-simple-1.7.32.jar;C:\Users\naga.vijaya.krishna\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.12.3\jackson-databind-2.12.3.jar;C:\Users\naga.vijaya.krishna\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.12.3\jackson-annotations-2.12.3.jar;C:\Users\naga.vijaya.krishna\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.12.3\jackson-core-2.12.3.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.7.0\junit-jupiter-api-5.7.0.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\apiguardian\apiguardian-api\1.1.0\apiguardian-api-1.1.0.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\junit\platform\junit-platform-commons\1.7.0\junit-platform-commons-1.7.0.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\json\json\20210307\json-20210307.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.7.0\junit-jupiter-engine-5.7.0.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\junit\platform\junit-platform-engine\1.7.0\junit-platform-engine-1.7.0.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\s3\2.17.89\s3-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\aws-xml-protocol\2.17.89\aws-xml-protocol-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\aws-query-protocol\2.17.89\aws-query-protocol-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\protocol-core\2.17.89\protocol-core-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\arns\2.17.89\arns-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\profiles\2.17.89\profiles-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\sdk-core\2.17.89\sdk-core-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\reactivestreams\reactive-streams\1.0.3\reactive-streams-1.0.3.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\auth\2.17.89\auth-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\json-utils\2.17.89\json-utils-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\third-party-jackson-core\2.17.89\third-party-jackson-core-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\eventstream\eventstream\1.0.1\eventstream-1.0.1.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\http-client-spi\2.17.89\http-client-spi-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\regions\2.17.89\regions-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\annotations\2.17.89\annotations-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\utils\2.17.89\utils-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\aws-core\2.17.89\aws-core-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\metrics-spi\2.17.89\metrics-spi-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\apache-client\2.17.89\apache-client-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\apache\httpcomponents\httpclient\4.5.13\httpclient-4.5.13.jar;C:\Users\naga.vijaya.krishna\.m2\repository\commons-logging\commons-logging\1.2\commons-logging-1.2.jar;C:\Users\naga.vijaya.krishna\.m2\repository\commons-codec\commons-codec\1.11\commons-codec-1.11.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\apache\httpcomponents\httpcore\4.4.11\httpcore-4.4.11.jar;C:\Users\naga.vijaya.krishna\.m2\repository\software\amazon\awssdk\netty-nio-client\2.17.89\netty-nio-client-2.17.89.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-codec-http\4.1.68.Final\netty-codec-http-4.1.68.Final.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-codec-http2\4.1.68.Final\netty-codec-http2-4.1.68.Final.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-codec\4.1.68.Final\netty-codec-4.1.68.Final.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-transport\4.1.68.Final\netty-transport-4.1.68.Final.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-resolver\4.1.68.Final\netty-resolver-4.1.68.Final.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-common\4.1.68.Final\netty-common-4.1.68.Final.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-buffer\4.1.68.Final\netty-buffer-4.1.68.Final.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-handler\4.1.68.Final\netty-handler-4.1.68.Final.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-transport-native-epoll\4.1.68.Final\netty-transport-native-epoll-4.1.68.Final-linux-x86_64.jar;C:\Users\naga.vijaya.krishna\.m2\repository\io\netty\netty-transport-native-unix-common\4.1.68.Final\netty-transport-native-unix-common-4.1.68.Final.jar;C:\Users\naga.vijaya.krishna\.m2\repository\com\typesafe\netty\netty-reactive-streams-http\2.0.5\netty-reactive-streams-http-2.0.5.jar;C:\Users\naga.vijaya.krishna\.m2\repository\com\typesafe\netty\netty-reactive-streams\2.0.5\netty-reactive-streams-2.0.5.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\mockito\mockito-core\3.7.7\mockito-core-3.7.7.jar;C:\Users\naga.vijaya.krishna\.m2\repository\net\bytebuddy\byte-buddy\1.10.19\byte-buddy-1.10.19.jar;C:\Users\naga.vijaya.krishna\.m2\repository\net\bytebuddy\byte-buddy-agent\1.10.19\byte-buddy-agent-1.10.19.jar;C:\Users\naga.vijaya.krishna\.m2\repository\org\objenesis\objenesis\3.1\objenesis-3.1.jar;C:\Users\naga.vijaya.krishna\.m2\repository\com\google\code\gson\gson\2.8.9\gson-2.8.9.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\naga.vijaya.krishna"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2024-04-16"/>
+    <property name="java.home" value="C:\Program Files\Java\jdk-21"/>
+    <property name="file.separator" value="\"/>
+    <property name="basedir" value="C:\Users\naga.vijaya.krishna\IdeaProjects\macdonalds-poc\mac-lambda-kafka-producer"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="surefire.real.class.path" value="C:\Users\naga.vijaya.krishna\AppData\Local\Temp\surefire4014513541413447233\surefirebooter-20240607100629129_3.jar"/>
+    <property name="user.script" value=""/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="21.0.3+7-LTS-152"/>
+    <property name="user.name" value="naga.vijaya.krishna"/>
+    <property name="stdout.encoding" value="Cp1252"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="localRepository" value="C:\Users\naga.vijaya.krishna\.m2\repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="C:\Users\NAGAVI~1.KRI\AppData\Local\Temp\"/>
+    <property name="java.version" value="21.0.3"/>
+    <property name="user.dir" value="C:\Users\naga.vijaya.krishna\IdeaProjects\macdonalds-poc\mac-lambda-kafka-producer"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="native.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="C:\Program Files\Java\jdk-21\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\nodejs\;C:\Program Files\dotnet\;C:\terraform;C:\Maven\apache-maven-3.9.7\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Users\naga.vijaya.krishna\AppData\Local\Programs\Python\Launcher\;C:\Program Files\MySQL\MySQL Shell 8.0\bin\;C:\Users\naga.vijaya.krishna\AppData\Local\Microsoft\WindowsApps;C:\Users\naga.vijaya.krishna\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\naga.vijaya.krishna\AppData\Roaming\npm;C:\Users\naga.vijaya.krishna\AppData\Local\Google\Cloud SDK\google-cloud-sdk\bin;C:\terraform;C:\Maven\apache-maven-3.9.7\bin;;."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="stderr.encoding" value="Cp1252"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.version" value="21.0.3+7-LTS-152"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="65.0"/>
+  </properties>
+  <testcase name="testProduceMessage" classname="com.mac.KafkaProducerTest" time="3.539">
+    <system-out><![CDATA[Message sent to topic mac_pos partition 0 offset 16
+]]></system-out>
+    <system-err><![CDATA[[main] INFO org.apache.kafka.clients.producer.ProducerConfig - ProducerConfig values: 
+	acks = -1
+	batch.size = 16384
+	bootstrap.servers = [pkc-921jm.us-east-2.aws.confluent.cloud:9092]
+	buffer.memory = 33554432
+	client.dns.lookup = use_all_dns_ips
+	client.id = producer-1
+	compression.type = none
+	connections.max.idle.ms = 540000
+	delivery.timeout.ms = 120000
+	enable.idempotence = true
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.StringSerializer
+	linger.ms = 1
+	max.block.ms = 60000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metadata.max.idle.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.class = class org.apache.kafka.clients.producer.internals.DefaultPartitioner
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 6000
+	retries = 3
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = [hidden]
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.mechanism = PLAIN
+	security.protocol = SASL_SSL
+	security.providers = null
+	send.buffer.bytes = 131072
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.apache.kafka.common.serialization.StringSerializer
+
+[main] INFO org.apache.kafka.common.security.authenticator.AbstractLogin - Successfully logged in.
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka version: 3.0.0
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka commitId: 8cb0a5e9d3441962
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka startTimeMs: 1717772792694
+[kafka-producer-network-thread | producer-1] INFO org.apache.kafka.clients.Metadata - [Producer clientId=producer-1] Cluster ID: lkc-jw0112
+[main] INFO org.apache.kafka.clients.producer.KafkaProducer - [Producer clientId=producer-1] Closing the Kafka producer with timeoutMillis = 9223372036854775807 ms.
+[main] INFO org.apache.kafka.common.metrics.Metrics - Metrics scheduler closed
+[main] INFO org.apache.kafka.common.metrics.Metrics - Closing reporter org.apache.kafka.common.metrics.JmxReporter
+[main] INFO org.apache.kafka.common.metrics.Metrics - Metrics reporters closed
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - App info kafka.producer for producer-1 unregistered
+]]></system-err>
+  </testcase>
+</testsuite>
