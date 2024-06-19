@@ -1,0 +1,7 @@
+com/mcd/service/XmlProcessingService.class
+com/mcd/model/EvCustom.class
+com/mcd/model/Event.class
+com/mcd/service/KafkaConsumerService.class
+com/mcd/KafkaConsumerApplication.class
+com/mcd/KafkaConfig.class
+com/mcd/model/Info.class
