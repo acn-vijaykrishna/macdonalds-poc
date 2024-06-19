@@ -2,41 +2,32 @@ package com.mcd.service;
 
 
 import com.mcd.model.Event;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
-
-import java.io.StringReader;
 
 @Service
 public class KafkaConsumerService {
 
-    @KafkaListener(topics = "<your-topic-name>", groupId = "<your-consumer-group>")
-    public void listen(String message) {
-        System.out.println("Received message: " + message);
-        Event event = parseXmlEvent(message);
+    @Autowired
+    private XmlProcessingService xmlProcessingService;
+
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
+
+    @KafkaListener(topics = "${spring.kafka.topic.input}", groupId = "${spring.kafka.consumer.group-id}")
+    public void listen(ConsumerRecord<String, String> record) {
+        String storeId = record.key();
+        String message = record.value();
+        Event event = xmlProcessingService.parseXmlEvent(message);
         if (event != null) {
-            processEvent(event);
+            String regId = event.getRegId();
+            String averoFormat = xmlProcessingService.processEvent(event);
+            String key = storeId + "-" + regId;
+            kafkaTemplate.send("${spring.kafka.topic.output}", key, averoFormat);
         }
     }
 
-    private Event parseXmlEvent(String xml) {
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(Event.class);
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            return (Event) unmarshaller.unmarshal(new StringReader(xml));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private void processEvent(Event event) {
-        // Process the event as needed
-        System.out.println("Processed Event: RegId=" + event.getRegId() +
-                ", Type=" + event.getType() + ", Time=" + event.getTime());
-    }
 }

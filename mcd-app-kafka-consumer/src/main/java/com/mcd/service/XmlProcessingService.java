@@ -26,7 +26,7 @@ public class XmlProcessingService {
 
     public String processEvent(Event event) {
         if (event != null && event.getEvCustom() != null && event.getEvCustom().getInfo() != null) {
-            String info = event.getEvCustom().getInfo();
+            String info = event.getEvCustom().getInfo().getData();
             String decodedInfo = URLDecoder.decode(info, StandardCharsets.UTF_8);
             return convertToAveroFormat(decodedInfo);
         }
