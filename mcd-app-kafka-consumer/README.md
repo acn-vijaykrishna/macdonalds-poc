@@ -5,12 +5,12 @@
 Build the Docker image:
 
 ```jsunicoderegexp
-docker build -t <your-dockerhub-username>/kafka-consumer:latest .
+docker build -t kafka-consumer:latest .
 ```
 
 Push the Docker image to Docker Hub:
 ```jsunicoderegexp
-docker push <your-dockerhub-username>/kafka-consumer:latest
+docker push kafka-consumer:latest
 ```
 
 ### Deploy to AWS EKS
