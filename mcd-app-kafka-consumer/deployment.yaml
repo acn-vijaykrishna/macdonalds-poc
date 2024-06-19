@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: kafka-consumer
-          image: <your-dockerhub-username>/kafka-consumer:latest
+          image: kafka-consumer:latest
           ports:
             - containerPort: 8080
 ---
