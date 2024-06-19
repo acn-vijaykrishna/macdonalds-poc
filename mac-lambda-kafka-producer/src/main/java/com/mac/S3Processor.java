@@ -15,6 +15,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
@@ -26,7 +27,7 @@ import java.util.concurrent.Future;
  */
 public class S3Processor {
 
-    private static final String TOPIC_NAME = "raw_restaurant_transaction";
+    private static final String TOPIC_NAME = "raw_STLD_restaurant_transaction";
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private static final String KEY = "001";
@@ -62,6 +63,27 @@ public class S3Processor {
         //  }
 //            String message = parseMessage(fileContent);
 //            context.getLogger().log("FileContent:" + XMLReader.read());
+            String loyaltyKey = XMLReader.readLoyaltyKey();
+            List<String> loyaltyList = XMLReader.readLoyaltyList();
+
+            for(String loyalty : loyaltyList){
+                ProducerRecord<String, String> kafkaRecord = new ProducerRecord<>(TOPIC_NAME, loyaltyKey, loyalty);
+
+                try {
+                    Future<RecordMetadata> future = producer.send(kafkaRecord, (metadata, exception) -> {
+                        if (exception == null) {
+                            context.getLogger().log("Message sent successfully: " + metadata.toString());
+                        } else {
+                            context.getLogger().log("Error sending message: " + exception.getMessage());
+                        }
+                    });
+                    RecordMetadata metadata = future.get();
+                    context.getLogger().log("Message sent to topic: " + metadata.topic() + " partition: " + metadata.partition() + " offset: " + metadata.offset());
+
+                } catch (Exception e) {
+                    context.getLogger().log("Error producing messages: " + e.getMessage());
+                }
+            }
             ProducerRecord<String, String> kafkaRecord = new ProducerRecord<>(TOPIC_NAME, KEY, XMLReader.read());
 
             try {
