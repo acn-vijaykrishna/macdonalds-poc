@@ -34,8 +34,6 @@ public class XMLReader {
             // Check if the file was found
             if (inputStream == null) {
                 throw new IllegalArgumentException("file not found! " + "example.xml");
-            } else {
-                System.out.println("File found!");
             }
 
             // Parse the XML file
@@ -73,7 +71,7 @@ public class XMLReader {
         return writer.getBuffer().toString();
     }
 
-    public static String readLoyaltyKey() {
+    public static String readRawMessageKey() {
 
         try {
             Document doc = getDoc();
@@ -105,8 +103,6 @@ public class XMLReader {
             // Check if the file was found
             if (inputStream == null) {
                 throw new IllegalArgumentException("file not found! " + "example.xml");
-            } else {
-                System.out.println("File found!");
             }
 
             // Parse the XML file
@@ -124,9 +120,9 @@ public class XMLReader {
         }
         return null;
     }
-    public static List<String> readLoyaltyList() {
+    public static List<String> readRawMessageList() {
         List<String> rawList = new ArrayList<>();
-        String storeId = readLoyaltyKey();
+        String storeId = readRawMessageKey();
         Document doc = getDoc();
 
         NodeList nodeList = doc.getElementsByTagName("Event");

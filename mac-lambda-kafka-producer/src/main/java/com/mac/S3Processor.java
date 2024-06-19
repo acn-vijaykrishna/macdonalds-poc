@@ -2,7 +2,6 @@ package com.mac;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
-import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -30,9 +29,6 @@ public class S3Processor {
     private static final String TOPIC_NAME = "raw_STLD_restaurant_transaction";
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private static final String KEY = "001";
-
-
     public String processS3Event(S3Event s3Event, Context context) {
         context.getLogger().log("S3Event : " + s3Event);
         context.getLogger().log("Context : " + context);
@@ -45,29 +41,18 @@ public class S3Processor {
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(props);
         context.getLogger().log("producer : " + producer);
-//        for (S3EventNotification.S3EventNotificationRecord record : s3Event.getRecords()) {
-            //String bucketName = record.getS3().getBucket().getName();
-            //String objectKey = record.getS3().getObject().getKey();
+
         String bucketName = "macdposstore";
-        String objectKey = "POS_store-db_FR_1000_20240511_1.20240511021353.xml";
+        String objectKey = "POS_STLD_FR_1000_20240601_17.20240601122542.xml";
 
             context.getLogger().log("BucketName and ObjectKey" + bucketName + objectKey);
             // Read file content from S3
-        //String fileContent = null;
-        //try {
-        //    fileContent = readS3Object(bucketName, objectKey);
-        // } catch (Exception e) {
-        //    context.getLogger().log("Error reading S3 object: " + e.getMessage());
-        //    context.getLogger().log("Exception reading S3 object: " + e);
-//                break;
-        //  }
-//            String message = parseMessage(fileContent);
-//            context.getLogger().log("FileContent:" + XMLReader.read());
-            String loyaltyKey = XMLReader.readLoyaltyKey();
-            List<String> loyaltyList = XMLReader.readLoyaltyList();
 
-            for(String loyalty : loyaltyList){
-                ProducerRecord<String, String> kafkaRecord = new ProducerRecord<>(TOPIC_NAME, loyaltyKey, loyalty);
+            String rawMessageKey = XMLReader.readRawMessageKey();
+            List<String> rawMessageList = XMLReader.readRawMessageList();
+
+            for(String loyalty : rawMessageList){
+                ProducerRecord<String, String> kafkaRecord = new ProducerRecord<>(TOPIC_NAME, rawMessageKey, loyalty);
 
                 try {
                     Future<RecordMetadata> future = producer.send(kafkaRecord, (metadata, exception) -> {
@@ -84,24 +69,6 @@ public class S3Processor {
                     context.getLogger().log("Error producing messages: " + e.getMessage());
                 }
             }
-            ProducerRecord<String, String> kafkaRecord = new ProducerRecord<>(TOPIC_NAME, KEY, XMLReader.read());
-
-            try {
-                Future<RecordMetadata> future = producer.send(kafkaRecord, (metadata, exception) -> {
-                    if (exception == null) {
-                        context.getLogger().log("Message sent successfully: " + metadata.toString());
-                    } else {
-                        context.getLogger().log("Error sending message: " + exception.getMessage());
-                    }
-                });
-                RecordMetadata metadata = future.get();
-                context.getLogger().log("Message sent to topic: " + metadata.topic() + " partition: " + metadata.partition() + " offset: " + metadata.offset());
-
-            } catch (Exception e) {
-                context.getLogger().log("Error producing messages: " + e.getMessage());
-//                break;
-            }
-//        }
 
         return "Processed S3 event and sent to Kafka topic: " + TOPIC_NAME;
     }
