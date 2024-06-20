@@ -39,17 +39,17 @@ public class XMLReader {
             // Parse the XML file
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-//            System.out.println("dBuilder: " + dBuilder);
+            //            System.out.println("dBuilder: " + dBuilder);
             Document doc = dBuilder.parse(inputStream);
 
             doc.getDocumentElement().normalize();
 
             // Process the XML document
-//            System.out.println("Root element: " + doc.getDocumentElement().getNodeName());
+            //            System.out.println("Root element: " + doc.getDocumentElement().getNodeName());
 
             // Convert the Document to String
             String xmlString = documentToString(doc);
-//            System.out.println(xmlString);
+            //            System.out.println(xmlString);
 
             // Further processing of the XML document can be done here
             return xmlString;
@@ -71,10 +71,9 @@ public class XMLReader {
         return writer.getBuffer().toString();
     }
 
-    public static String readRawMessageKey() {
+    public static String readRawMessageKey(Document doc) {
 
         try {
-            Document doc = getDoc();
             // Create XPathFactory and XPath instance
             XPathFactory xPathfactory = XPathFactory.newInstance();
             XPath xpath = xPathfactory.newXPath();
@@ -120,12 +119,11 @@ public class XMLReader {
         }
         return null;
     }
-    public static List<String> readRawMessageList() {
+    public static List<String> readRawMessageList(Document stldDoc) {
         List<String> rawList = new ArrayList<>();
-        String storeId = readRawMessageKey();
-        Document doc = getDoc();
+        String storeId = readRawMessageKey(stldDoc);
 
-        NodeList nodeList = doc.getElementsByTagName("Event");
+        NodeList nodeList = stldDoc.getElementsByTagName("Event");
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {

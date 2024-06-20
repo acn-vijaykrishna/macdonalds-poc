@@ -8,17 +8,26 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.concurrent.Future;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Author: Vijay Krishna
@@ -41,52 +50,76 @@ public class S3Processor {
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(props);
         context.getLogger().log("producer : " + producer);
+        //        for (S3EventNotification.S3EventNotificationRecord record : s3Event.getRecords()) {
+        //String bucketName = record.getS3().getBucket().getName();
+        //String objectKey = record.getS3().getObject().getKey();
 
         String bucketName = "macdposstore";
-        String objectKey = "POS_STLD_FR_1000_20240601_17.20240601122542.xml";
+        String objectKey = "POS.zip";
 
-            context.getLogger().log("BucketName and ObjectKey" + bucketName + objectKey);
-            // Read file content from S3
+        context.getLogger().log("BucketName and ObjectKey" + bucketName + objectKey);
+        // Read file content from S3
+        Document stldDoc = readS3Object(bucketName, objectKey, context);
+        String rawMessageKey = XMLReader.readRawMessageKey(stldDoc);
+        List<String> rawMessageList = XMLReader.readRawMessageList(stldDoc);
 
-            String rawMessageKey = XMLReader.readRawMessageKey();
-            List<String> rawMessageList = XMLReader.readRawMessageList();
+        for(String loyalty : rawMessageList){
+            ProducerRecord<String, String> kafkaRecord = new ProducerRecord<>(TOPIC_NAME, rawMessageKey, loyalty);
 
-            for(String loyalty : rawMessageList){
-                ProducerRecord<String, String> kafkaRecord = new ProducerRecord<>(TOPIC_NAME, rawMessageKey, loyalty);
+            try {
+                Future<RecordMetadata> future = producer.send(kafkaRecord, (metadata, exception) -> {
+                    if (exception == null) {
+                        context.getLogger().log("Message sent successfully: " + metadata.toString());
+                    } else {
+                        context.getLogger().log("Error sending message: " + exception.getMessage());
+                    }
+                });
+                RecordMetadata metadata = future.get();
+                context.getLogger().log("Message sent to topic: " + metadata.topic() + " partition: " + metadata.partition() + " offset: " + metadata.offset());
 
-                try {
-                    Future<RecordMetadata> future = producer.send(kafkaRecord, (metadata, exception) -> {
-                        if (exception == null) {
-                            context.getLogger().log("Message sent successfully: " + metadata.toString());
-                        } else {
-                            context.getLogger().log("Error sending message: " + exception.getMessage());
-                        }
-                    });
-                    RecordMetadata metadata = future.get();
-                    context.getLogger().log("Message sent to topic: " + metadata.topic() + " partition: " + metadata.partition() + " offset: " + metadata.offset());
-
-                } catch (Exception e) {
-                    context.getLogger().log("Error producing messages: " + e.getMessage());
-                }
+            } catch (Exception e) {
+                context.getLogger().log("Error producing messages: " + e.getMessage());
             }
+        }
 
         return "Processed S3 event and sent to Kafka topic: " + TOPIC_NAME;
     }
 
-    private String readS3Object(String bucketName, String objectKey) {
-        InputStream inputStream = null;
+    public Document readS3Object(String bucketName, String objectKey, Context context) {
+        context.getLogger().log("###### Now Reading from S3 #######");
+        Document stldDoc = null;
         try {
-            S3Client s3Client = S3Client.builder().region(Region.US_EAST_1).build(); // Adjust region as needed
+            S3Client s3Client = S3Client.builder()
+                .region(Region.US_EAST_1)// Adjust region as needed
+                .build();
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(objectKey)
-                    .build();
+                .bucket(bucketName)
+                .key(objectKey)
+                .build();
 
-            inputStream = s3Client.getObject(getObjectRequest);
+            ResponseInputStream<GetObjectResponse> s3Object = s3Client.getObject(getObjectRequest);
+            ZipInputStream zipInputStream = new ZipInputStream(s3Object);
+            context.getLogger().log(null != zipInputStream ? "###### Object found #######" : "###### Null Object #######");
 
+            ZipEntry entry;
+            while ((entry = zipInputStream.getNextEntry()) != null) {
+                context.getLogger().log("###### Entry #######" + entry.getName());
+                if (!entry.isDirectory() && entry.getName().contains("STLD")) {
+                    Scanner scanner = new Scanner(zipInputStream);
+                    String xmlContent = scanner.useDelimiter("\\A").next();
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+                    stldDoc = builder.parse(new InputSource(new StringReader(xmlContent)));
+                    zipInputStream.closeEntry();
+                    break;
+                }
+                zipInputStream.closeEntry();
+            }
         } catch (Exception e) {
+            context.getLogger().log("###### Exception #######" + e.getMessage());
         }
-        return new Scanner(inputStream).useDelimiter("\\A").next();
+        //return new Scanner(inputStream).useDelimiter("\\A").next();
+        return stldDoc;
     }
 
     public Properties readConfig(String configFile) throws IOException {
