@@ -2,17 +2,13 @@ package com.mac;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.S3Event;
-import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
-import com.amazonaws.services.lambda.runtime.serialization.events.LambdaEventSerializers;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+
+
 
 /**
  * Author: Vijay Krishna
@@ -29,23 +25,36 @@ public class KafkaProducerLambda implements RequestHandler<Object, String> {
             context.getLogger().log("Input Event:" + input.getClass());
             if (input instanceof Map && ((Map<?, ?>) input).containsKey("records")) {
                 context.getLogger().log("S3 event detected.");
-                ObjectMapper objectMapper = new ObjectMapper();
 
                 Map<String, Object> inputMap = (Map<String, Object>) input;
-                String jsonString = objectMapper.writeValueAsString(inputMap);
-                context.getLogger().log("jsonString:"+jsonString);
+                List<Map<String, Object>> records = (List<Map<String, Object>>) inputMap.get("records");
+                Map<String, Object> innerMap = records.get(0);
+                Map<String, Object> s3 = (Map<String, Object>) innerMap.get("s3");
+                Map<String, Object> bucket = (Map<String, Object>) s3.get("bucket");
+                String bucketName = (String) bucket.get("name");
 
-               // Convert JSON string to S3Event
-                S3Event s3Event = new S3Event();
+                Map<String, Object> object = (Map<String, Object>) s3.get("object");
+                String objectKey = (String) object.get("key");
 
-                PojoSerializer<S3Event> serializer = LambdaEventSerializers.serializerFor(S3Event.class, ClassLoader.getSystemClassLoader());
-               s3Event = serializer.fromJson(jsonString);
 
-                context.getLogger().log("s3Event Generated:"+s3Event);
+                S3EventModel s3EventModel=new S3EventModel();
+                s3EventModel.setBucketName(bucketName);
+                s3EventModel.setObjectKey(objectKey);
+
+                /*S3Event s3Event =  EventLoader.loadS3Event("/Users/a1567309/IdeaProjects/macdonalds-poc/mac-lambda-kafka-producer/src/test/java/com/mac/s3-event1.json");
+                //PojoSerializer<S3Event> serializer = LambdaEventSerializers.serializerFor(S3Event.class, ClassLoader.getSystemClassLoader());
+                //S3Event s3Event = serializer.fromJson(jsonString);
+
+                s3Event = objectMapper.readValue(jsonString,S3Event.class);
+                final PojoSerializer<S3EventNotification> s3EventSerializer =
+                        LambdaEventSerializers.serializerFor(S3EventNotification.class, ClassLoader.getSystemClassLoader()); */
+
+
+                context.getLogger().log("s3EventModel Generated:"+s3EventModel);
                // Log the S3Event object for debugging
-               context.getLogger().log("S3Event to string: " + s3Event.toString());
+               context.getLogger().log("S3Event to string: " + s3EventModel.toString());
 
-                return handleS3Event(s3Event, context);
+                return handleS3Event(s3EventModel, context);
             } else {
                 context.getLogger().log("Non-S3 event detected.");
                 return handleNormalEvent(input, context);
@@ -56,9 +65,9 @@ public class KafkaProducerLambda implements RequestHandler<Object, String> {
         return null;
     }
 
-    private String handleS3Event(S3Event s3Event, Context context) {
+    private String handleS3Event(S3EventModel s3EventModel, Context context) {
         S3Processor s3Processor = new S3Processor();
-        return s3Processor.processS3Event(s3Event, context);
+        return s3Processor.processS3Event(s3EventModel, context);
     }
 
 

@@ -38,8 +38,8 @@ public class S3Processor {
     private static final String TOPIC_NAME = "raw_STLD_restaurant_transaction";
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    public String processS3Event(S3Event s3Event, Context context) {
-        context.getLogger().log("S3Event : " + s3Event);
+    public String processS3Event(S3EventModel s3EventModel, Context context) {
+        context.getLogger().log("S3Event : " + s3EventModel);
         context.getLogger().log("Context : " + context);
         Properties props = null;
         try {
@@ -54,8 +54,8 @@ public class S3Processor {
         //String bucketName = record.getS3().getBucket().getName();
         //String objectKey = record.getS3().getObject().getKey();
 
-        String bucketName = "macdposstore";
-        String objectKey = "POS.zip";
+        String bucketName = s3EventModel.getBucketName();
+        String objectKey = s3EventModel.getObjectKey();
 
         context.getLogger().log("BucketName and ObjectKey" + bucketName + objectKey);
         // Read file content from S3
