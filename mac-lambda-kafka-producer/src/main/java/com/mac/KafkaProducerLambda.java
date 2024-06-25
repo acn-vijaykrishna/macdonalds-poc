@@ -18,41 +18,37 @@ public class KafkaProducerLambda implements RequestHandler<Object, String> {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+    private static final String  RECORDS_OBJECT = "Records";
+    private static final String S3_OBJECT = "s3";
+    private static final String BUCKET_OBJECT = "bucket";
+    private static final String OBJECT = "object";
+    private static final String NAME = "name";
+    private static final String KEY = "key";
+
     @Override
     public String handleRequest(Object input, Context context) {
         try {
             context.getLogger().log("Input Event:" +     input);
             context.getLogger().log("Input Event:" + input.getClass());
-            if (input instanceof Map && ((Map<?, ?>) input).containsKey("records")) {
+            if (input instanceof Map && ((Map<?, ?>) input).containsKey(RECORDS_OBJECT)) {
                 context.getLogger().log("S3 event detected.");
 
                 Map<String, Object> inputMap = (Map<String, Object>) input;
-                List<Map<String, Object>> records = (List<Map<String, Object>>) inputMap.get("records");
+                List<Map<String, Object>> records = (List<Map<String, Object>>) inputMap.get(RECORDS_OBJECT);
                 Map<String, Object> innerMap = records.get(0);
-                Map<String, Object> s3 = (Map<String, Object>) innerMap.get("s3");
-                Map<String, Object> bucket = (Map<String, Object>) s3.get("bucket");
-                String bucketName = (String) bucket.get("name");
+                Map<String, Object> s3 = (Map<String, Object>) innerMap.get(S3_OBJECT);
+                Map<String, Object> bucket = (Map<String, Object>) s3.get(BUCKET_OBJECT);
+                String bucketName = (String) bucket.get(NAME);
 
-                Map<String, Object> object = (Map<String, Object>) s3.get("object");
-                String objectKey = (String) object.get("key");
+                Map<String, Object> object = (Map<String, Object>) s3.get(OBJECT);
+                String objectKey = (String) object.get(KEY);
 
 
                 S3EventModel s3EventModel=new S3EventModel();
                 s3EventModel.setBucketName(bucketName);
                 s3EventModel.setObjectKey(objectKey);
 
-                /*S3Event s3Event =  EventLoader.loadS3Event("/Users/a1567309/IdeaProjects/macdonalds-poc/mac-lambda-kafka-producer/src/test/java/com/mac/s3-event1.json");
-                //PojoSerializer<S3Event> serializer = LambdaEventSerializers.serializerFor(S3Event.class, ClassLoader.getSystemClassLoader());
-                //S3Event s3Event = serializer.fromJson(jsonString);
-
-                s3Event = objectMapper.readValue(jsonString,S3Event.class);
-                final PojoSerializer<S3EventNotification> s3EventSerializer =
-                        LambdaEventSerializers.serializerFor(S3EventNotification.class, ClassLoader.getSystemClassLoader()); */
-
-
                 context.getLogger().log("s3EventModel Generated:"+s3EventModel);
-               // Log the S3Event object for debugging
-               context.getLogger().log("S3Event to string: " + s3EventModel.toString());
 
                 return handleS3Event(s3EventModel, context);
             } else {

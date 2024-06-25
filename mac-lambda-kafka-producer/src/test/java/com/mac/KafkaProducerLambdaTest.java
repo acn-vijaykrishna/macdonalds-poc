@@ -94,7 +94,7 @@ public class KafkaProducerLambdaTest {
         List<Map<String, Object>> records = new ArrayList<>();
         records.add(innerMap);
 
-        map.put("records", records);
+        map.put("Records", records);
 
         System.out.println(map);
 
