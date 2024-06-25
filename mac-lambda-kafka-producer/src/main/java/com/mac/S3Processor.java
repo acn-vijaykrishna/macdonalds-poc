@@ -50,9 +50,6 @@ public class S3Processor {
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(props);
         context.getLogger().log("producer : " + producer);
-        //        for (S3EventNotification.S3EventNotificationRecord record : s3Event.getRecords()) {
-        //String bucketName = record.getS3().getBucket().getName();
-        //String objectKey = record.getS3().getObject().getKey();
 
         String bucketName = s3EventModel.getBucketName();
         String objectKey = s3EventModel.getObjectKey();

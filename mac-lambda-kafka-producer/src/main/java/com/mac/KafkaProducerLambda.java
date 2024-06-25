@@ -25,6 +25,7 @@ public class KafkaProducerLambda implements RequestHandler<Object, String> {
     private static final String NAME = "name";
     private static final String KEY = "key";
 
+    //Method to take input of event data as a Map and generate the s3Event
     @Override
     public String handleRequest(Object input, Context context) {
         try {
@@ -33,6 +34,7 @@ public class KafkaProducerLambda implements RequestHandler<Object, String> {
             if (input instanceof Map && ((Map<?, ?>) input).containsKey(RECORDS_OBJECT)) {
                 context.getLogger().log("S3 event detected.");
 
+                //Extract the bucketName and objectKey from the input
                 Map<String, Object> inputMap = (Map<String, Object>) input;
                 List<Map<String, Object>> records = (List<Map<String, Object>>) inputMap.get(RECORDS_OBJECT);
                 Map<String, Object> innerMap = records.get(0);
@@ -43,7 +45,7 @@ public class KafkaProducerLambda implements RequestHandler<Object, String> {
                 Map<String, Object> object = (Map<String, Object>) s3.get(OBJECT);
                 String objectKey = (String) object.get(KEY);
 
-
+                //Generate S3EventModel
                 S3EventModel s3EventModel=new S3EventModel();
                 s3EventModel.setBucketName(bucketName);
                 s3EventModel.setObjectKey(objectKey);
