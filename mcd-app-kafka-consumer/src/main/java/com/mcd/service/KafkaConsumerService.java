@@ -7,9 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Service
 public class KafkaConsumerService {
+
+    private static final Logger logger = LogManager.getLogger(KafkaConsumerService.class);
 
     @Autowired
     private XmlProcessingService xmlProcessingService;
@@ -19,14 +23,27 @@ public class KafkaConsumerService {
 
     @KafkaListener(topics = "${spring.kafka.topic.input}", groupId = "${spring.kafka.consumer.group-id}")
     public void listen(ConsumerRecord<String, String> record) {
+        long startTime = System.currentTimeMillis();
+        logger.info("ENTRY - Method: listen, Timestamp: {}", startTime);
         String storeId = record.key();
         String message = record.value();
-        Event event = xmlProcessingService.parseXmlEvent(message);
-        if (event != null) {
-            String regId = event.getRegId();
-            String averoFormat = xmlProcessingService.processEvent(event);
-            String key = storeId + "-" + regId;
-            kafkaTemplate.send("${spring.kafka.topic.output}", key, averoFormat);
+        logger.info("Received message: Key = {}, Value = {}", storeId, message);
+        try {
+            Event event = xmlProcessingService.parseXmlEvent(message);
+            if (event != null) {
+                String regId = event.getRegId();
+                String averoFormat = xmlProcessingService.processEvent(event);
+                String key = storeId + "-" + regId;
+                kafkaTemplate.send("${spring.kafka.topic.output}", key, averoFormat);
+                logger.info("Successfully sent message to topic: Key = {}, Value = {}", key, averoFormat);
+            } else {
+                logger.warn("Event parsing returned null for message: {}", message);
+            }
+        } catch (Exception e) {
+            logger.error("Error processing message: Key = {}, Value = {}", storeId, message, e);
+        } finally {
+            long endTime = System.currentTimeMillis();
+            logger.info("EXIT - Method: listen, Timestamp: {}, Duration: {} ms", endTime, endTime - startTime);
         }
     }
 

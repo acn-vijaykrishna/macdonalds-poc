@@ -20,10 +20,20 @@ set AWS_SECRET_ACCESS_KEY=<aws secret access key from secrets.txt>
 
 ### Build and Push Docker Image
 
-Build the Docker image:
+Build, run & test the Docker image:
 
 ```jsunicoderegexp
 docker build -t kafka-consumer:latest .
+docker images
+docker run -p 8080:8080 kafka-consumer:latest
+
+docker run -p 8080:8080 \
+  -e SPRING_KAFKA_BOOTSTRAP_SERVERS=<your-kafka-bootstrap-servers> \
+  -e SPRING_KAFKA_CONSUMER_GROUP_ID=<your-consumer-group-id> \
+  -e SPRING_KAFKA_TOPIC_INPUT=<your-input-topic> \
+  -e SPRING_KAFKA_TOPIC_OUTPUT=<your-output-topic> \
+  kafka-consumer:latest
+  
 ```
 
 Push the Docker image to Docker Hub:

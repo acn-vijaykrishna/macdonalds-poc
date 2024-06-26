@@ -10,6 +10,9 @@ COPY . .
 # Build the project
 RUN mvn clean package -DskipTests
 
+# Check if the JAR file is created
+RUN ls -l /app/target/
+
 # Use the official OpenJDK image for a minimal footprint deployment
 FROM openjdk:17-jdk-slim
 
@@ -17,7 +20,10 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the JAR file from the builder stage
-COPY --from=builder /app/target/kafka-consumer-1.0.0.jar /app/kafka-consumer.jar
+COPY --from=builder /app/target/mcd-app-kafka-consumer-1.0.0.jar /app/kafka-consumer.jar
+
+# Check if the JAR file is copied correctly
+RUN ls -l /app/
 
 # Expose port 8080
 EXPOSE 8080
