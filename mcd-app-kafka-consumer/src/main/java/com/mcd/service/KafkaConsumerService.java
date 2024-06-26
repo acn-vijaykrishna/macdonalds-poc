@@ -1,6 +1,5 @@
 package com.mcd.service;
 
-
 import com.mcd.model.Event;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +8,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.annotation.PostConstruct;
 
 @Service
 public class KafkaConsumerService {
@@ -20,6 +21,13 @@ public class KafkaConsumerService {
 
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
+
+
+    @PostConstruct
+    public void init() {
+        logger.info("Kafka Username: {}", System.getenv("KAFKA_USERNAME"));
+        logger.info("Kafka Password: {}", System.getenv("KAFKA_PASSWORD"));
+    }
 
     @KafkaListener(topics = "${spring.kafka.topic.input}", groupId = "${spring.kafka.consumer.group-id}")
     public void listen(ConsumerRecord<String, String> record) {

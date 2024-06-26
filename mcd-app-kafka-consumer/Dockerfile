@@ -10,7 +10,8 @@ COPY . .
 # Build the project
 RUN mvn clean package -DskipTests
 
-# Check if the JAR file is created
+# Check the contents of the /app directory
+RUN ls -l /app/
 RUN ls -l /app/target/
 
 # Use the official OpenJDK image for a minimal footprint deployment
@@ -22,11 +23,14 @@ WORKDIR /app
 # Copy the JAR file from the builder stage
 COPY --from=builder /app/target/mcd-app-kafka-consumer-1.0.0.jar /app/kafka-consumer.jar
 
-# Check if the JAR file is copied correctly
+# Copy the application properties file
+COPY --from=builder /app/src/main/resources/application.properties /app/application.properties
+
+# Check the contents of the /app directory again to verify copies
 RUN ls -l /app/
 
 # Expose port 8080
 EXPOSE 8080
 
 # Command to run the JAR file
-ENTRYPOINT ["java", "-jar", "kafka-consumer.jar"]
+ENTRYPOINT ["java", "-Dspring.config.location=file:/app/application.properties", "-jar", "kafka-consumer.jar"]
