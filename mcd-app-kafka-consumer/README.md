@@ -37,22 +37,28 @@ docker push kafka-consumer:latest
 ### Deploy to AWS EKS
 
 - Authenticate Docker to ECR
-
-  docker login --username AWS --password-stdin 992382542338.dkr.ecr.us-east-1.amazonaws.com <<< "$(aws ecr get-login-password --region us-east-1)"
-
+- 
+```jsunicoderegexp
+docker login --username AWS --password-stdin 992382542338.dkr.ecr.us-east-1.amazonaws.com <<< "$(aws ecr get-login-password --region us-east-1)"
+```
+  
 - Create the ECR repository (if needed)
+```jsunicoderegexp
   aws ecr create-repository --repository-name kafka-consumer --region us-east-1
+```
 
 - Tag the Docker image
+```jsunicoderegexp
   docker tag kafka-consumer:latest 992382542338.dkr.ecr.us-east-1.amazonaws.com/kafka-consumer:latest
-
+```
 - Push the Docker image to ECR
+```jsunicoderegexp
   docker push 992382542338.dkr.ecr.us-east-1.amazonaws.com/kafka-consumer:latest
-
+```
 - If you get this error while pushing image, goto AWS ECR container and update permissions on that registry
   ```error parsing HTTP 403 response body: unexpected end of JSON input: ""```
 
-### Apply the Kubernetes configuration:
+### Apply the Kubernetes configuration for EKS:
 
 ```jsunicoderegexp
 aws sts get-caller-identity
@@ -85,4 +91,12 @@ kubectl config current-context //  current contecxt
 kubectl config view -o jsonpath="{.contexts[?(@.name == 'arn:aws:eks:us-east-1:992382542338:cluster/mcdonalds-eks')].context}"
 kubectl config view -o jsonpath="{.users[?(@.name == 'arn:aws:eks:us-east-1:992382542338:cluster/mcdonalds-eks')].user}"
 kubectl auth can-i get deployments --namespace=default
+```
+### Working with ECS
+
+Stopping Service and Tasks:
+
+```jsunicoderegexp
+aws ecs stop-task --cluster acn-mcd-ecs-app-cluster --task arn:aws:ecs:us-east-1:992382542338:task/acn-mcd-ecs-app-cluster/8dabbc88cc314f148e47318fbedf7ec2
+aws ecs update-service --cluster acn-mcd-ecs-app-cluster --service kafkaConsumerAppService --desired-count 0
 ```
