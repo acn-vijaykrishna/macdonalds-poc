@@ -9,8 +9,7 @@
         <!-- CloudWatch Appender -->
         <Appender type="AWS" name="CloudWatch">
             <Region>us-east-1</Region>
-            <LogGroupName>/aws/ecs/containerinsights/acn-mcd-ecs-app-cluster</LogGroupName>
-            <LogStreamName>kafka-producer</LogStreamName>
+            <LogGroupName>/aws/lambda/KafkaProducerLambda</LogGroupName>
             <Layout type="PatternLayout">
                 <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
             </Layout>
