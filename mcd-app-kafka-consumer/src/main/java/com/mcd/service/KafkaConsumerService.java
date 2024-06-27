@@ -37,7 +37,7 @@ public class KafkaConsumerService {
         String message = record.value();
         logger.info("Received message: Key = {}, Value = {}", storeId, message);
         try {
-            Event event = xmlProcessingService.parseXmlEvent(message);
+            Event event = xmlProcessingService.parseStringXmlEvent(message);
             if (event != null) {
                 String regId = event.getRegId();
                 String averoFormat = xmlProcessingService.processEvent(event);

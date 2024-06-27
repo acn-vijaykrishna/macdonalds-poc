@@ -25,15 +25,7 @@ Build, run & test the Docker image:
 ```jsunicoderegexp
 docker build -t kafka-consumer:latest .
 docker images
-docker run -p 8080:8080 kafka-consumer:latest
-
-docker run -p 8080:8080 \
-  -e SPRING_KAFKA_BOOTSTRAP_SERVERS=<your-kafka-bootstrap-servers> \
-  -e SPRING_KAFKA_CONSUMER_GROUP_ID=<your-consumer-group-id> \
-  -e SPRING_KAFKA_TOPIC_INPUT=<your-input-topic> \
-  -e SPRING_KAFKA_TOPIC_OUTPUT=<your-output-topic> \
-  kafka-consumer:latest
-  
+docker run -p 8080:8080 kafka-consumer:latest  
 ```
 
 Push the Docker image to Docker Hub:
@@ -45,8 +37,8 @@ docker push kafka-consumer:latest
 ### Deploy to AWS EKS
 
 - Authenticate Docker to ECR
-  aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin
-  992382542338.dkr.ecr.us-east-1.amazonaws.com
+
+  docker login --username AWS --password-stdin 992382542338.dkr.ecr.us-east-1.amazonaws.com <<< "$(aws ecr get-login-password --region us-east-1)"
 
 - Create the ECR repository (if needed)
   aws ecr create-repository --repository-name kafka-consumer --region us-east-1
