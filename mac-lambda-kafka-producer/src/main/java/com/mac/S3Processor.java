@@ -1,13 +1,14 @@
 package com.mac;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -22,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.concurrent.Future;
@@ -36,25 +36,39 @@ import java.util.zip.ZipInputStream;
 public class S3Processor {
 
     private static final String TOPIC_NAME = "raw_STLD_restaurant_transaction";
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final Logger logger = LogManager.getLogger(S3Processor.class);
 
+    /**
+     * Processes an S3 event and sends the data to a Kafka topic.
+     *
+     * This method reads an S3EventModel object and a Lambda Context object as input.
+     * It reads the S3 bucket and object information from the S3EventModel.
+     * It then reads the object from the S3 bucket, which is expected to be a zipped XML file.
+     * The XML file is parsed and the relevant data is extracted.
+     * The extracted data is then sent to a Kafka topic.
+     *
+     * @param s3EventModel The S3 event model containing the bucket and object information.
+     * @param context The Lambda context object containing runtime information.
+     * @return A string message indicating the result of the operation.
+     */
     public String processS3Event(S3EventModel s3EventModel, Context context) {
-        context.getLogger().log("S3Event : " + s3EventModel);
-        context.getLogger().log("Context : " + context);
+        long startTime = System.currentTimeMillis();
+        logger.info("ENTRY - Method: processS3Event, Timestamp: {}", startTime);
+        logger.info("S3Event : {}", s3EventModel);
+        logger.info("Context : {}", context);
         Properties props = null;
         try {
             props = readConfig("client.properties");
         } catch (IOException e) {
-            context.getLogger().log("Failed to load configuration: " + e.getMessage());
+            logger.error("Failed to load configuration: {}", e.getMessage());
         }
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(props);
-        context.getLogger().log("producer : " + producer);
+        logger.info("producer : {}", producer);
 
         String bucketName = s3EventModel.getBucketName();
         String objectKey = s3EventModel.getObjectKey();
 
-        context.getLogger().log("BucketName and ObjectKey" + bucketName + objectKey);
         // Read file content from S3
         Document stldDoc = readS3Object(bucketName, objectKey, context);
         String rawMessageKey = XMLReader.readRawMessageKey(stldDoc);
@@ -66,24 +80,42 @@ public class S3Processor {
             try {
                 Future<RecordMetadata> future = producer.send(kafkaRecord, (metadata, exception) -> {
                     if (exception == null) {
-                        context.getLogger().log("Message sent successfully: " + metadata.toString());
+                        logger.info("Message sent successfully: {}", metadata.toString());
                     } else {
-                        context.getLogger().log("Error sending message: " + exception.getMessage());
+                        logger.error("Error sending message: {}", exception.getMessage());
                     }
                 });
                 RecordMetadata metadata = future.get();
-                context.getLogger().log("Message sent to topic: " + metadata.topic() + " partition: " + metadata.partition() + " offset: " + metadata.offset());
+                logger.info("Message sent to topic: {} partition: {} offset: {} ", metadata.topic(),metadata.partition(),metadata.offset());
 
             } catch (Exception e) {
-                context.getLogger().log("Error producing messages: " + e.getMessage());
+                logger.error("Error producing messages: {}", e.getMessage());
+                break;
             }
         }
+
+        long endTime = System.currentTimeMillis();
+        logger.info("EXIT - Method: processS3Event, Timestamp: {}, Duration: {} ms", endTime, endTime - startTime);
 
         return "Processed S3 event and sent to Kafka topic: " + TOPIC_NAME;
     }
 
+    /**
+     * Reads an object from an S3 bucket and returns it as a Document.
+     *
+     * This method takes the name of an S3 bucket and an object key as input.
+     * It uses the AWS SDK to create an S3 client and sends a GetObjectRequest to the S3 bucket.
+     * The object is expected to be a zipped XML file.
+     * The method unzips the file and parses the XML content into a Document object.
+     * If the object is not found or an error occurs during the process, the method returns null.
+     *
+     * @param bucketName The name of the S3 bucket.
+     * @param objectKey The key of the object in the S3 bucket.
+     * @param context The Lambda context object containing runtime information.
+     * @return A Document object representing the XML content of the S3 object, or null if the object is not found or an error occurs.
+     */
     public Document readS3Object(String bucketName, String objectKey, Context context) {
-        context.getLogger().log("###### Now Reading from S3 #######");
+        logger.info("###### Now Reading from S3 Bucket: {}, Object: {}#######", bucketName, objectKey);
         Document stldDoc = null;
         try {
             S3Client s3Client = S3Client.builder()
@@ -96,11 +128,11 @@ public class S3Processor {
 
             ResponseInputStream<GetObjectResponse> s3Object = s3Client.getObject(getObjectRequest);
             ZipInputStream zipInputStream = new ZipInputStream(s3Object);
-            context.getLogger().log(null != zipInputStream ? "###### Object found #######" : "###### Null Object #######");
+            logger.info(null != zipInputStream ? "###### Object found #######" : "###### Null Object #######");
 
             ZipEntry entry;
             while ((entry = zipInputStream.getNextEntry()) != null) {
-                context.getLogger().log("###### Entry #######" + entry.getName());
+                logger.info("Zip File Entry: {}" + entry.getName());
                 if (!entry.isDirectory() && entry.getName().contains("STLD")) {
                     Scanner scanner = new Scanner(zipInputStream);
                     String xmlContent = scanner.useDelimiter("\\A").next();
@@ -113,12 +145,25 @@ public class S3Processor {
                 zipInputStream.closeEntry();
             }
         } catch (Exception e) {
-            context.getLogger().log("###### Exception #######" + e.getMessage());
+            logger.error("Exception occured while reading object {}", e.getMessage());
         }
-        //return new Scanner(inputStream).useDelimiter("\\A").next();
         return stldDoc;
     }
 
+    /**
+     * Reads a properties file and returns it as a Properties object.
+     *
+     * This method takes the name of a properties file as input.
+     * It uses the ClassLoader's getResourceAsStream method to read the file.
+     * The properties file is expected to be in the classpath.
+     * The method loads the properties from the file into a Properties object.
+     * It also adds two Kafka producer specific properties to the Properties object.
+     * If the file is not found or an error occurs during the process, the method throws an IOException.
+     *
+     * @param configFile The name of the properties file.
+     * @return A Properties object containing the properties from the file.
+     * @throws IOException If the properties file is not found or an error occurs during reading.
+     */
     public Properties readConfig(String configFile) throws IOException {
         Properties props = new Properties();
 
@@ -134,18 +179,5 @@ public class S3Processor {
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
         return props;
-    }
-
-    private String parseMessage(Object input) {
-        if (input instanceof Map) {
-            try {
-                Map<String, Object> inputMap = (Map<String, Object>) input;
-                inputMap.put("key", "S3");
-                return OBJECT_MAPPER.writeValueAsString(input);
-            } catch (IOException e) {
-                return null;
-            }
-        }
-        return null;
     }
 }

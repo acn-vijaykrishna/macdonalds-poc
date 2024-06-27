@@ -1,19 +1,29 @@
 package com.mac;
 
-import java.lang.System;
-import java.io.*;
-import java.nio.file.*;
-import java.util.*;
-import java.time.*;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 
-import org.apache.kafka.clients.consumer.*;
-import org.apache.kafka.clients.producer.*;
-import org.apache.kafka.common.serialization.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.Properties;
 
 public class Client {
     public static void main(String[] args) {
         try {
-            String topic = "mac_pos";
+            String topic = "raw_STLD_restaurant_transaction";
             final Properties config = readConfig(Client.class.getClassLoader().getResourceAsStream("client.properties").toString());
             produce(topic, config);
             consume(topic, config);

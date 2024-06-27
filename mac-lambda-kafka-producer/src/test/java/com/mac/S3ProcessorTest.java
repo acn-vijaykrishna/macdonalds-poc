@@ -61,7 +61,6 @@ class S3ProcessorTest {
     String bucketName = "testBucket";
     String objectKey = "testObject";
     Context mockContext = Mockito.mock(Context.class);
-    LambdaLogger mockLogger = Mockito.mock(LambdaLogger.class);
 
     try (MockedStatic mocked = Mockito.mockStatic(S3Client.class)) {
       mocked.when(S3Client::builder).thenReturn(s3ClienBuildertMock);
@@ -71,7 +70,6 @@ class S3ProcessorTest {
       when(s3ClientMock.getObject(any(GetObjectRequest.class))).thenReturn(getMockObjectResponseFromS3());
       //when(s3ClientMock.getObject(any(GetObjectRequest.class))).thenReturn(getMockString());
       // Act
-      Mockito.when(mockContext.getLogger()).thenReturn(mockLogger);
       Document result = s3Processor.readS3Object(bucketName, objectKey, mockContext);
 
       // Assert
