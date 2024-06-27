@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 
@@ -25,15 +27,17 @@ public class KafkaProducerLambda implements RequestHandler<Object, String> {
     private static final String NAME = "name";
     private static final String KEY = "key";
 
+    private static final Logger logger = LogManager.getLogger(KafkaProducerLambda.class);
+
     //Method to take input of event data as a Map and generate the s3Event
     @Override
     public String handleRequest(Object input, Context context) {
+        long startTime = System.currentTimeMillis();
+        logger.info("ENTRY - Method: handleRequest, Timestamp: {}", startTime);
         try {
-            context.getLogger().log("Input Event:" +     input);
-            context.getLogger().log("Input Event:" + input.getClass());
+            logger.info("Input Event:" + input.getClass());
             if (input instanceof Map && ((Map<?, ?>) input).containsKey(RECORDS_OBJECT)) {
-                context.getLogger().log("S3 event detected.");
-
+                logger.info("Received S3 event:" + input);
                 //Extract the bucketName and objectKey from the input
                 Map<String, Object> inputMap = (Map<String, Object>) input;
                 List<Map<String, Object>> records = (List<Map<String, Object>>) inputMap.get(RECORDS_OBJECT);
@@ -50,15 +54,18 @@ public class KafkaProducerLambda implements RequestHandler<Object, String> {
                 s3EventModel.setBucketName(bucketName);
                 s3EventModel.setObjectKey(objectKey);
 
-                context.getLogger().log("s3EventModel Generated:"+s3EventModel);
-
+                logger.debug("s3EventModel Generated: "+s3EventModel);
+                logger.info("Successfully s3 data set: bucketName = {}, objectKey = {}", bucketName, objectKey);
                 return handleS3Event(s3EventModel, context);
             } else {
-                context.getLogger().log("Non-S3 event detected.");
+                logger.warn("Non S3 Event message: {}", input);
                 return handleNormalEvent(input, context);
             }
         } catch (Exception ex) {
-            context.getLogger().log("Exception in handleRequest :" + ex);
+            logger.error("Error occurred while processing S3 input:",ex);
+        } finally {
+            long endTime = System.currentTimeMillis();
+            logger.info("EXIT - Method: handleRequest, Timestamp: {}, Duration: {} ms", endTime, endTime - startTime);
         }
         return null;
     }
@@ -77,6 +84,7 @@ public class KafkaProducerLambda implements RequestHandler<Object, String> {
     private String parseMessage(Object input) {
         if (input instanceof Map) {
             try {
+                logger.info("Method: parseMessage input :{}", input);
                 return OBJECT_MAPPER.writeValueAsString(input);
             } catch (IOException e) {
                 return null;
