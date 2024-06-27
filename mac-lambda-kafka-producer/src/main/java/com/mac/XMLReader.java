@@ -1,18 +1,12 @@
 package com.mac;
 
-import java.io.InputStream;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -22,6 +16,10 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class XMLReader {
 
@@ -137,7 +135,7 @@ public class XMLReader {
 
                 // Check if Type attribute is Ev_Custom
                 if (eventElement.getAttribute("Type").equals("Ev_Custom") ||
-                        eventElement.getAttribute("Type").equals("TRX_Sale")) {
+                    eventElement.getAttribute("Type").equals("TRX_Sale")) {
                     eventElement.setAttribute("storeId", storeId);
                     String content = null;
                     try {

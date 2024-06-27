@@ -10,7 +10,6 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Future;
 
@@ -39,17 +38,6 @@ public class OtherProcessor {
         KafkaProducer<String, String> producer = new KafkaProducer<>(props);
 
         // Parse the input message
-//        String message;
-//        try {
-////            message = parseMessage(input);
-//            context.getLogger().log("Event Message: " + input);
-//            if (input == null || input.isEmpty()) {
-//                throw new IllegalArgumentException("Message is null or empty");
-//            }
-//        } catch (Exception e) {
-//            context.getLogger().log("Failed to parse input message: " + e.getMessage());
-//            return "Error parsing input message";
-//        }
         if (input == null || input.isEmpty()) {
             throw new IllegalArgumentException("Message is null or empty");
         }
