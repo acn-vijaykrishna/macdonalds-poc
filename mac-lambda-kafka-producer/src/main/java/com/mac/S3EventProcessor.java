@@ -3,17 +3,6 @@ package com.mac;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -24,6 +13,13 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * KafkaProducerLambda is a class that handles S3 bucket events and sends the data to a Kafka topic.
@@ -45,8 +41,6 @@ public class S3EventProcessor implements RequestHandler<Object, String> {
     private static final String OBJECT = "object";
     private static final String NAME = "name";
     private static final String KEY = "key";
-
-    private static final Logger logger = LogManager.getLogger(S3EventProcessor.class);
 
     //Method to take input of event data as a Map and generate the s3Event
     @Override

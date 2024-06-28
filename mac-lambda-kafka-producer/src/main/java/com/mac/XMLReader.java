@@ -6,8 +6,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -17,17 +15,31 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
-import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
+/**
+ * XMLReader is a class that provides methods to read and process XML documents.
+ *
+ * This class contains methods to read a raw message key from an XML document,
+ * read a list of raw messages from an XML document, and convert a node to a string.
+ *
+ * @author Varun Verma
+ */
 public class XMLReader {
 
-    private static final Logger logger = LogManager.getLogger(XMLReader.class);
-
+    /**
+     * Reads the raw message key from an XML document.
+     *
+     * This method takes a Document object and a Lambda Context object as input.
+     * It uses XPath to find the storeId attribute in the XML document and returns the value of the storeId attribute.
+     * If an error occurs during the process, the method logs the error message and returns an empty string.
+     *
+     * @param doc The Document object representing the XML file.
+     * @param context The Lambda context object containing runtime information.
+     * @return The value of the storeId attribute in the XML document as a string.
+     */
     public static String readRawMessageKey(Document doc, Context context) {
 
         try {
@@ -47,6 +59,19 @@ public class XMLReader {
         return "";
     }
 
+    /**
+     * Reads a list of raw messages from an XML document.
+     *
+     * This method takes a Document object and a Lambda Context object as input.
+     * It reads the storeId attribute from the XML document, finds all Event elements in the XML document,
+     * checks the Type attribute of each Event element, and adds the XML string of the Event element to a list
+     * if the Type attribute is "Ev_Custom" or "TRX_Sale".
+     * If an error occurs during the process, the method logs the error message and returns null.
+     *
+     * @param stldDoc The Document object representing the XML file.
+     * @param context The Lambda context object containing runtime information.
+     * @return A list of XML strings of the Event elements with Type attribute "Ev_Custom" or "TRX_Sale".
+     */
     public static List<String> readRawMessageList(Document stldDoc, Context context) {
         long startTime = System.currentTimeMillis();
         context.getLogger().log("ENTRY - Method: readRawMessageList, Timestamp: "+ startTime);
@@ -74,7 +99,7 @@ public class XMLReader {
                 }
 
             }
-            logger.info("EXIT - Method: readRawMessageList - rawList size: {}", rawList.size());
+            context.getLogger().log("EXIT - Method: readRawMessageList - rawList size: "+ rawList.size());
             return rawList;
         } catch (Exception ex) {
             context.getLogger().log("Error occurred in Method: readRawMessageList: "+ex.getMessage());

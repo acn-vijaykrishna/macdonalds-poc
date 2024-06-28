@@ -4,7 +4,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.w3c.dom.Document;
 
@@ -15,13 +14,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class XMLReaderTest {
 
   private XMLReader xmlReader;
-  private Document document;
 
   private LambdaLogger lambdaLogger;
 
@@ -30,7 +27,6 @@ public class XMLReaderTest {
   @BeforeEach
   public void setup() {
     xmlReader = new XMLReader();
-    document = mock(Document.class);
     context = Mockito.mock(Context.class);
     lambdaLogger = Mockito.mock(LambdaLogger.class);
     when(context.getLogger()).thenReturn(lambdaLogger);
@@ -71,8 +67,6 @@ public class XMLReaderTest {
       DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 
       Document doc = dBuilder.parse(inputStream);
-
-      //doc.getDocumentElement().normalize();
 
       return doc;
 
