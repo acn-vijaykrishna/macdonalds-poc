@@ -2,24 +2,32 @@ package com.mac;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
-
 
 public class KafkaLambdaHandler implements RequestHandler<Object, String> {
 
     private static final String TOPIC_NAME = "curated_loyalty_transaction";
     private static final String GROUP_ID = "mcd-curated-loyalty";
+    private static final String API_URL = "https://8xcpa37nf4.execute-api.us-east-1.amazonaws.com/mcd-dev/loyalty";
+
+    private static final String PROPS_FILE = "client.properties";
 
     @Override
     public String handleRequest(Object input, Context context) {
@@ -27,12 +35,11 @@ public class KafkaLambdaHandler implements RequestHandler<Object, String> {
         Properties props;
 
         try {
-            props = readConfig("client.properties");
+            props = readConfig(PROPS_FILE);
         } catch (IOException e) {
             context.getLogger().log("Failed to load configuration: " + e.getMessage());
             return "Error loading configuration";
         }
-
 
         // Create Kafka consumer
         KafkaConsumer<String, String> consumer = createKafkaConsumer(props);
@@ -43,8 +50,12 @@ public class KafkaLambdaHandler implements RequestHandler<Object, String> {
         try {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(10));
             for (ConsumerRecord<String, String> record : records) {
-                context.getLogger().log("Processing Records : " + record.value());
-                // TODO: Call SessionM API
+                context.getLogger().log("Processing Record: " + record.value());
+
+                // Call SessionM API
+                String response = callSessionMApi();
+                context.getLogger().log("API Response: " + response);
+
                 messages.append("Received message: ").append(record.value()).append("\n");
             }
         } catch (Exception e) {
@@ -79,5 +90,14 @@ public class KafkaLambdaHandler implements RequestHandler<Object, String> {
         return props;
     }
 
+    private String callSessionMApi() throws IOException {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost(API_URL);
+        httpPost.setEntity(new StringEntity("{}", StandardCharsets.UTF_8));
+        httpPost.setHeader("Content-Type", "application/json");
 
+        try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
+            return EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+        }
+    }
 }
