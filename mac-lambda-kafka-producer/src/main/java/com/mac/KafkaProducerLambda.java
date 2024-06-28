@@ -137,7 +137,7 @@ public class KafkaProducerLambda {
                 zipInputStream.closeEntry();
             }
         } catch (Exception e) {
-            context.getLogger().log("Exception occured while reading object "+ e.getMessage());
+            context.getLogger().log("Exception occurred while reading object "+ e.getMessage());
         }
         return stldDoc;
     }

@@ -84,7 +84,7 @@ public class S3EventProcessor implements RequestHandler<Object, String> {
     }
 
     private String handleS3Event(S3EventModel s3EventModel, Context context) {
-        context.getLogger().log("S3Event : "+ s3EventModel);
+        context.getLogger().log("S3Event Processing: "+ s3EventModel);
         String bucketName = s3EventModel.getBucketName();
         String objectKey = s3EventModel.getObjectKey();
         KafkaProducerLambda s3Processor = new KafkaProducerLambda();
