@@ -1,7 +1,6 @@
 package com.mac;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -31,7 +30,7 @@ import java.util.zip.ZipInputStream;
  *
  * @author Vijay Krishna
  */
-public class S3EventProcessor implements RequestHandler<Object, String> {
+public class S3EventProcessor {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -43,7 +42,6 @@ public class S3EventProcessor implements RequestHandler<Object, String> {
     private static final String KEY = "key";
 
     //Method to take input of event data as a Map and generate the s3Event
-    @Override
     public String handleRequest(Object input, Context context) {
         long startTime = System.currentTimeMillis();
         context.getLogger().log("ENTRY - Method: handleRequest, Timestamp: "+ startTime);
@@ -143,7 +141,7 @@ public class S3EventProcessor implements RequestHandler<Object, String> {
 
             ZipEntry entry;
             while ((entry = zipInputStream.getNextEntry()) != null) {
-                context.getLogger().log("Zip File Entry: {}" + entry.getName());
+                context.getLogger().log("Zip File Entry: " + entry.getName());
                 if (!entry.isDirectory() && entry.getName().contains("STLD")) {
                     Scanner scanner = new Scanner(zipInputStream);
                     String xmlContent = scanner.useDelimiter("\\A").next();

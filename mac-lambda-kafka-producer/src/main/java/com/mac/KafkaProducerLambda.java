@@ -1,9 +1,11 @@
 package com.mac;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -21,6 +23,7 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.concurrent.Future;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -34,7 +37,7 @@ import java.util.zip.ZipInputStream;
  *
  * @author Vijay Krishna
  */
-public class KafkaProducerLambda {
+public class KafkaProducerLambda implements RequestHandler<Object, String> {
 
     private static final String TOPIC_NAME = "raw_STLD_restaurant_transaction";
 
@@ -70,15 +73,15 @@ public class KafkaProducerLambda {
             ProducerRecord<String, String> kafkaRecord = new ProducerRecord<>(TOPIC_NAME, rawMessageKey, loyalty);
 
             try {
-                producer.send(kafkaRecord, (metadata, exception) -> {
+                Future<RecordMetadata> future = producer.send(kafkaRecord, (metadata, exception) -> {
                     if (exception == null) {
-                        context.getLogger().log("Message sent to topic: "
-                            +metadata.topic()+" partition: "+metadata.partition()+" offset: "
-                            + metadata.offset());
+                        context.getLogger().log("Message sent successfully: " + metadata.toString());
                     } else {
-                        context.getLogger().log("Error sending message: "+ exception.getMessage());
+                        context.getLogger().log("Error sending message: " + exception.getMessage());
                     }
                 });
+                RecordMetadata metadata = future.get();
+                context.getLogger().log("Message sent to topic: " + metadata.topic() + " partition: " + metadata.partition() + " offset: " + metadata.offset());
             } catch (Exception e) {
                 context.getLogger().log("Error producing messages: "+ e.getMessage());
                 break;
@@ -90,62 +93,6 @@ public class KafkaProducerLambda {
         context.getLogger().log("EXIT - Method: processDocument, Timestamp: "+ endTime +", Duration: "+ duration +"ms");
 
         return "Processed S3 event and sent to Kafka topic: " + TOPIC_NAME;
-    }
-
-    /**
-     * Reads an object from an S3 bucket and returns it as a Document.
-     *
-     * This method takes the name of an S3 bucket and an object key as input.
-     * It uses the AWS SDK to create an S3 client and sends a GetObjectRequest to the S3 bucket.
-     * The object is expected to be a zipped XML file.
-     * The method unzips the file and parses the XML content into a Document object.
-     * If the object is not found or an error occurs during the process, the method returns null.
-     *
-     * @param bucketName The name of the S3 bucket.
-     * @param objectKey The key of the object in the S3 bucket.
-     * @param context The Lambda context object containing runtime information.
-     * @return A Document object representing the XML content of the S3 object, or null if the object is not found or an error occurs.
-     */
-    public Document readS3Object(String bucketName, String objectKey, Context context) {
-        long startTime = System.currentTimeMillis();
-        context.getLogger().log("ENTRY - Method: readS3Object, Timestamp: "+ startTime);
-        context.getLogger().log("###### Now Reading from S3 Bucket: "+bucketName+", Object: "+objectKey+"#######");
-        Document stldDoc = null;
-        try {
-            S3Client s3Client = S3Client.builder()
-                .region(Region.US_EAST_1)// Adjust region as needed
-                .build();
-            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .bucket(bucketName)
-                .key(objectKey)
-                .build();
-
-            ResponseInputStream<GetObjectResponse> s3Object = s3Client.getObject(getObjectRequest);
-            ZipInputStream zipInputStream = new ZipInputStream(s3Object);
-            context.getLogger().log(null != zipInputStream ? "###### Object found #######" : "###### Null Object #######");
-
-            ZipEntry entry;
-            while ((entry = zipInputStream.getNextEntry()) != null) {
-                context.getLogger().log("Zip File Entry: {}" + entry.getName());
-                if (!entry.isDirectory() && entry.getName().contains("STLD")) {
-                    Scanner scanner = new Scanner(zipInputStream);
-                    String xmlContent = scanner.useDelimiter("\\A").next();
-                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                    DocumentBuilder builder = factory.newDocumentBuilder();
-                    stldDoc = builder.parse(new InputSource(new StringReader(xmlContent)));
-                    zipInputStream.closeEntry();
-                    break;
-                }
-                zipInputStream.closeEntry();
-            }
-        } catch (Exception e) {
-            context.getLogger().log("Exception occurred while reading object "+ e.getMessage());
-        } finally {
-            long endTime = System.currentTimeMillis();
-            long duration = endTime - startTime;
-            context.getLogger().log("EXIT - Method: readS3Object, Timestamp: "+endTime+", Duration: "+duration+"ms");
-        }
-        return stldDoc;
     }
 
     /**
@@ -164,7 +111,7 @@ public class KafkaProducerLambda {
      */
     public Properties readConfig(String configFile, Context context) throws IOException {
         long startTime = System.currentTimeMillis();
-        context.getLogger().log("ENTRY - Method: readS3Object, Timestamp: "+ startTime);
+        context.getLogger().log("ENTRY - Method: readConfig, Timestamp: "+ startTime);
         Properties props = new Properties();
 
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(configFile)) {
@@ -181,5 +128,22 @@ public class KafkaProducerLambda {
         long duration = endTime - startTime;
         context.getLogger().log("EXIT - Method: readConfig, Timestamp: "+endTime+", Duration: "+duration+"ms");
         return props;
+    }
+
+    @Override
+    public String handleRequest(Object input, Context context) {
+        long startTime = System.currentTimeMillis();
+        context.getLogger().log("ENTRY - Method: handleRequest, Timestamp: "+ startTime);
+        try {
+            S3EventProcessor s3EventProcessor = new S3EventProcessor();
+            return s3EventProcessor.handleRequest(input, context);
+        } catch (Exception e){
+            context.getLogger().log("Error occurred while processing S3 input: "+ e.getMessage());
+        } finally {
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            context.getLogger().log("EXIT - Method: handleRequest, Timestamp: "+endTime+", Duration: "+duration+"ms");
+        }
+        return null;
     }
 }
