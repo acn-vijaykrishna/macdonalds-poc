@@ -124,6 +124,8 @@ public class S3EventProcessor implements RequestHandler<Object, String> {
      * @return A Document object representing the XML content of the S3 object, or null if the object is not found or an error occurs.
      */
     public Document readS3Object(String bucketName, String objectKey, Context context) {
+        long startTime = System.currentTimeMillis();
+        context.getLogger().log("ENTRY - Method: readS3Object, Timestamp: "+ startTime);
         context.getLogger().log("###### Now Reading from S3 Bucket: "+bucketName+", Object: "+objectKey+"#######");
         Document stldDoc = null;
         try {
@@ -155,7 +157,11 @@ public class S3EventProcessor implements RequestHandler<Object, String> {
             }
         } catch (Exception e) {
             context.getLogger().log("Exception occured while reading object "+ e.getMessage());
-        }
+        }  finally {
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+        context.getLogger().log("EXIT - Method: readS3Object, Timestamp: "+endTime+", Duration: "+duration+"ms");
+    }
         return stldDoc;
     }
 
