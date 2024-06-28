@@ -31,7 +31,7 @@ import java.util.zip.ZipInputStream;
  *
  * @author Vijay Krishna
  */
-public class S3EventProcessor implements RequestHandler<Object, String> {
+public class S3EventProcessor {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -43,7 +43,6 @@ public class S3EventProcessor implements RequestHandler<Object, String> {
     private static final String KEY = "key";
 
     //Method to take input of event data as a Map and generate the s3Event
-    @Override
     public String handleRequest(Object input, Context context) {
         long startTime = System.currentTimeMillis();
         context.getLogger().log("ENTRY - Method: handleRequest, Timestamp: "+ startTime);
