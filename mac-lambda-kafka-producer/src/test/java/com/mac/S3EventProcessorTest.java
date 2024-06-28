@@ -2,14 +2,28 @@ package com.mac;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.w3c.dom.Document;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3ClientBuilder;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+
+import java.io.*;
 import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class S3EventProcessorTest {
@@ -17,10 +31,14 @@ public class S3EventProcessorTest {
     private S3EventProcessor s3EventProcessor;
 
     private ObjectMapper objectMapper;
-
+    private S3Event mockS3Event;
+    private Context mockContext;
+    private S3Client mockS3Client;
+    @Mock
+    private S3Client s3ClientMock;
+    @Mock private S3ClientBuilder s3ClienBuildertMock;
     @Mock
     private Context context;
-
     @Mock
     private LambdaLogger lambdaLogger;
 
@@ -33,6 +51,9 @@ public class S3EventProcessorTest {
         objectMapper = new ObjectMapper();
         // Configure the ObjectMapper to handle unknown properties gracefully
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mockS3Event = Mockito.mock(S3Event.class);
+        mockContext = Mockito.mock(Context.class);
+        mockS3Client = Mockito.mock(S3Client.class);
 
     }
 
@@ -44,6 +65,32 @@ public class S3EventProcessorTest {
 
         // Call the handleRequest method
         String result = s3EventProcessor.handleRequest(input, context);
+    }
+
+    @Test
+    public void testReadS3Object() throws IOException {
+
+        // Arrange
+        String bucketName = "testBucket";
+        String objectKey = "testObject";
+        Context mockContext = Mockito.mock(Context.class);
+
+        try (MockedStatic mocked = Mockito.mockStatic(S3Client.class)) {
+            mocked.when(S3Client::builder).thenReturn(s3ClienBuildertMock);
+            when(s3ClienBuildertMock.region(Region.US_EAST_1)).thenReturn(s3ClienBuildertMock);
+            when(s3ClienBuildertMock.build()).thenReturn(s3ClientMock);
+            //when s3ClientMock.getObject is called with any GetObjectRequest, then return s3Object
+            when(s3ClientMock.getObject(any(GetObjectRequest.class))).thenReturn(getMockObjectResponseFromS3());
+            when(mockContext.getLogger()).thenReturn(lambdaLogger);
+            // Act
+            Document result = s3EventProcessor.readS3Object(bucketName, objectKey, mockContext);
+
+            // Assert
+            // Verify the result as per your expectation
+            // For example, if you expect the zip file to contain 2 XML files, you can assert that the result size is 2
+            assertNotNull(result, "The returned Document should not be null");
+        }
+
     }
 
     private Map<String, Object> getMockInputForS3() {
@@ -99,5 +146,10 @@ public class S3EventProcessorTest {
         System.out.println(map);
 
         return map;
+    }
+
+    ResponseInputStream<GetObjectResponse> getMockObjectResponseFromS3() throws FileNotFoundException {
+        InputStream testZipStream = new FileInputStream(new File("src/test/resources/POS.zip"));
+        return new ResponseInputStream<>(GetObjectResponse.builder().build(), testZipStream);
     }
 }

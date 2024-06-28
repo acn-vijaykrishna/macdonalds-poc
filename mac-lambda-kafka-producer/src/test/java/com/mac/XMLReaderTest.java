@@ -1,7 +1,10 @@
 package com.mac;
 
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -11,30 +14,36 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class XMLReaderTest {
 
   private XMLReader xmlReader;
-  private Document document;
+
+  private LambdaLogger lambdaLogger;
+
+  private Context context;
 
   @BeforeEach
   public void setup() {
     xmlReader = new XMLReader();
-    document = mock(Document.class);
+    context = Mockito.mock(Context.class);
+    lambdaLogger = Mockito.mock(LambdaLogger.class);
+    when(context.getLogger()).thenReturn(lambdaLogger);
   }
 
   @Test
   public void shouldReturnStoreIdWhenReadLoyaltyKeyIsCalled() {
     // Act
-    String result = xmlReader.readRawMessageKey(getDoc());
+    when(context.getLogger()).thenReturn(lambdaLogger);
+    String result = xmlReader.readRawMessageKey(getDoc(), context);
     // Assert
     assertNotNull(result);
   }
   @Test
   public void shouldReturnListOfLoyaltyWhenReadLoyaltyListIsCalled() {
     //Act
-    List<String> result = xmlReader.readRawMessageList(getDoc());
+    List<String> result = xmlReader.readRawMessageList(getDoc(), context);
 
     assertNotNull(result);
     assertEquals(104, result.size());
@@ -58,8 +67,6 @@ public class XMLReaderTest {
       DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 
       Document doc = dBuilder.parse(inputStream);
-
-      //doc.getDocumentElement().normalize();
 
       return doc;
 

@@ -4,10 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -24,53 +21,50 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
-import java.util.concurrent.Future;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * Author: Vijay Krishna
- * Handle S3 bucket events
+ * KafkaProducerLambda is a class that handles S3 bucket events and sends the data to a Kafka topic.
+ *
+ * This class contains methods to process an S3 event, read an object from an S3 bucket, and read a properties file.
+ * The processS3Event method reads an S3EventModel object and a Lambda Context object as input, reads the S3 bucket and object information from the S3EventModel, reads the object from the S3 bucket, parses the XML file, extracts the relevant data, and sends the extracted data to a Kafka topic.
+ * The readS3Object method takes the name of an S3 bucket and an object key as input, uses the AWS SDK to create an S3 client and sends a GetObjectRequest to the S3 bucket, unzips the file and parses the XML content into a Document object.
+ * The readConfig method takes the name of a properties file as input, uses the ClassLoader's getResourceAsStream method to read the file, loads the properties from the file into a Properties object, and adds two Kafka producer specific properties to the Properties object.
+ *
+ * @author Vijay Krishna
  */
 public class KafkaProducerLambda {
 
     private static final String TOPIC_NAME = "raw_STLD_restaurant_transaction";
-    private static final Logger logger = LogManager.getLogger(KafkaProducerLambda.class);
 
     /**
      * Processes an S3 event and sends the data to a Kafka topic.
      *
-     * This method reads an S3EventModel object and a Lambda Context object as input.
-     * It reads the S3 bucket and object information from the S3EventModel.
-     * It then reads the object from the S3 bucket, which is expected to be a zipped XML file.
-     * The XML file is parsed and the relevant data is extracted.
-     * The extracted data is then sent to a Kafka topic.
+     * This method takes a Document object representing an XML file and a Lambda Context object as input.
+     * It reads the XML file, extracts the relevant data, and sends the extracted data to a Kafka topic.
+     * The method uses a KafkaProducer to send the data to the Kafka topic.
+     * If an error occurs during the process, the method logs the error message and breaks the loop of sending messages.
      *
-     * @param s3EventModel The S3 event model containing the bucket and object information.
+     * @param stldDoc The Document object representing the XML file.
      * @param context The Lambda context object containing runtime information.
      * @return A string message indicating the result of the operation.
      */
-    public String processS3Event(S3EventModel s3EventModel, Context context) {
+    public String processDocument(Document stldDoc, Context context) {
         long startTime = System.currentTimeMillis();
 
-        context.getLogger().log("ENTRY - Method: processS3Event, Timestamp: " + startTime);
-        context.getLogger().log("S3Event : "+ s3EventModel);
+        context.getLogger().log("ENTRY - Method: processDocument, Timestamp: " + startTime);
         Properties props = null;
         try {
-            props = readConfig("client.properties");
+            props = readConfig("client.properties",context);
         } catch (IOException e) {
             context.getLogger().log("Failed to load configuration: "+ e.getMessage());
         }
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(props);
 
-        String bucketName = s3EventModel.getBucketName();
-        String objectKey = s3EventModel.getObjectKey();
-
-        // Read file content from S3
-        Document stldDoc = readS3Object(bucketName, objectKey, context);
-        String rawMessageKey = XMLReader.readRawMessageKey(stldDoc);
-        List<String> rawMessageList = XMLReader.readRawMessageList(stldDoc);
+        String rawMessageKey = XMLReader.readRawMessageKey(stldDoc, context);
+        List<String> rawMessageList = XMLReader.readRawMessageList(stldDoc, context);
 
         for(String loyalty : rawMessageList){
             ProducerRecord<String, String> kafkaRecord = new ProducerRecord<>(TOPIC_NAME, rawMessageKey, loyalty);
@@ -93,7 +87,7 @@ public class KafkaProducerLambda {
 
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
-        context.getLogger().log("EXIT - Method: processS3Event, Timestamp: "+ endTime +", Duration: "+ duration +"ms");
+        context.getLogger().log("EXIT - Method: processDocument, Timestamp: "+ endTime +", Duration: "+ duration +"ms");
 
         return "Processed S3 event and sent to Kafka topic: " + TOPIC_NAME;
     }
@@ -113,6 +107,8 @@ public class KafkaProducerLambda {
      * @return A Document object representing the XML content of the S3 object, or null if the object is not found or an error occurs.
      */
     public Document readS3Object(String bucketName, String objectKey, Context context) {
+        long startTime = System.currentTimeMillis();
+        context.getLogger().log("ENTRY - Method: readS3Object, Timestamp: "+ startTime);
         context.getLogger().log("###### Now Reading from S3 Bucket: "+bucketName+", Object: "+objectKey+"#######");
         Document stldDoc = null;
         try {
@@ -143,7 +139,11 @@ public class KafkaProducerLambda {
                 zipInputStream.closeEntry();
             }
         } catch (Exception e) {
-            context.getLogger().log("Exception occured while reading object "+ e.getMessage());
+            context.getLogger().log("Exception occurred while reading object "+ e.getMessage());
+        } finally {
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            context.getLogger().log("EXIT - Method: readS3Object, Timestamp: "+endTime+", Duration: "+duration+"ms");
         }
         return stldDoc;
     }
@@ -162,7 +162,9 @@ public class KafkaProducerLambda {
      * @return A Properties object containing the properties from the file.
      * @throws IOException If the properties file is not found or an error occurs during reading.
      */
-    public Properties readConfig(String configFile) throws IOException {
+    public Properties readConfig(String configFile, Context context) throws IOException {
+        long startTime = System.currentTimeMillis();
+        context.getLogger().log("ENTRY - Method: readS3Object, Timestamp: "+ startTime);
         Properties props = new Properties();
 
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(configFile)) {
@@ -175,7 +177,9 @@ public class KafkaProducerLambda {
         // Add Kafka producer specific properties
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+        context.getLogger().log("EXIT - Method: readConfig, Timestamp: "+endTime+", Duration: "+duration+"ms");
         return props;
     }
 }

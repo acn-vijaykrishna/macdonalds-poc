@@ -1,12 +1,11 @@
 package com.mac;
 
+import com.amazonaws.services.lambda.runtime.Context;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -16,70 +15,32 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
-import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
+/**
+ * XMLReader is a class that provides methods to read and process XML documents.
+ *
+ * This class contains methods to read a raw message key from an XML document,
+ * read a list of raw messages from an XML document, and convert a node to a string.
+ *
+ * @author Varun Verma
+ */
 public class XMLReader {
 
-    private static final Logger logger = LogManager.getLogger(XMLReader.class);
-
-    public static String read() {
-        long startTime = System.currentTimeMillis();
-        logger.info("ENTRY - Method: read, Timestamp: {}", startTime);
-        try {
-            // Get the ClassLoader
-            ClassLoader classLoader = XMLReader.class.getClassLoader();
-
-            // Load the file as an InputStream
-            InputStream inputStream = classLoader.getResourceAsStream("test.xml");
-
-            // Check if the file was found
-            if (inputStream == null) {
-                throw new IllegalArgumentException("file not found! " + "example.xml");
-            }
-
-            // Parse the XML file
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(inputStream);
-
-            doc.getDocumentElement().normalize();
-
-
-            // Convert the Document to String
-            String xmlString = documentToString(doc);
-            //            System.out.println(xmlString);
-
-            // Further processing of the XML document can be done here
-            logger.debug("Output in read method Value= {} ",xmlString);
-            logger.info("Successfully read the XML file");
-            return xmlString;
-
-        } catch (Exception ex) {
-            logger.error("Error occurred in Method: XMLReader.read:",ex);
-        } finally {
-            long endTime = System.currentTimeMillis();
-            logger.info("EXIT - Method: XMLReader.read, Timestamp: {}, Duration: {} ms", endTime, endTime - startTime);
-        }
-        return "";
-    }
-
-    private static String documentToString(Document doc) throws Exception {
-        TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer transformer = tf.newTransformer();
-        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-        StringWriter writer = new StringWriter();
-        transformer.transform(new DOMSource(doc), new StreamResult(writer));
-        return writer.getBuffer().toString();
-    }
-
-    public static String readRawMessageKey(Document doc) {
+    /**
+     * Reads the raw message key from an XML document.
+     *
+     * This method takes a Document object and a Lambda Context object as input.
+     * It uses XPath to find the storeId attribute in the XML document and returns the value of the storeId attribute.
+     * If an error occurs during the process, the method logs the error message and returns an empty string.
+     *
+     * @param doc The Document object representing the XML file.
+     * @param context The Lambda context object containing runtime information.
+     * @return The value of the storeId attribute in the XML document as a string.
+     */
+    public static String readRawMessageKey(Document doc, Context context) {
 
         try {
             // Create XPathFactory and XPath instance
@@ -90,68 +51,64 @@ public class XMLReader {
 
             // Evaluate the XPath expression against the document
             String storeId = (String) expr.evaluate(doc, XPathConstants.STRING);
-            logger.info("readRawMessageKey Read storeId: {}", storeId);
+            context.getLogger().log("readRawMessageKey Read storeId: "+ storeId);
             return storeId;
         } catch (Exception ex) {
-            logger.error("Error occurred in Method: readRawMessageKey:",ex);
+            context.getLogger().log("Error occurred in Method: readRawMessageKey: "+ex.getMessage());
         }
         return "";
     }
 
-    public static Document getDoc() {
-        logger.info("ENTRY - Method: getDoc");
+    /**
+     * Reads a list of raw messages from an XML document.
+     *
+     * This method takes a Document object and a Lambda Context object as input.
+     * It reads the storeId attribute from the XML document, finds all Event elements in the XML document,
+     * checks the Type attribute of each Event element, and adds the XML string of the Event element to a list
+     * if the Type attribute is "Ev_Custom" or "TRX_Sale".
+     * If an error occurs during the process, the method logs the error message and returns null.
+     *
+     * @param stldDoc The Document object representing the XML file.
+     * @param context The Lambda context object containing runtime information.
+     * @return A list of XML strings of the Event elements with Type attribute "Ev_Custom" or "TRX_Sale".
+     */
+    public static List<String> readRawMessageList(Document stldDoc, Context context) {
+        long startTime = System.currentTimeMillis();
+        context.getLogger().log("ENTRY - Method: readRawMessageList, Timestamp: "+ startTime);
         try {
-            // Get the ClassLoader
-            ClassLoader classLoader = XMLReader.class.getClassLoader();
+            List<String> rawList = new ArrayList<>();
+            String storeId = readRawMessageKey(stldDoc, context);
 
-            // Load the file as an InputStream
-            InputStream inputStream = classLoader.getResourceAsStream("test.xml");
+            NodeList nodeList = stldDoc.getElementsByTagName("Event");
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node node = nodeList.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element eventElement = (Element) node;
 
-            // Check if the file was found
-            if (inputStream == null) {
-                throw new IllegalArgumentException("file not found! " + "example.xml");
+                    // Check if Type attribute is Ev_Custom
+                    if (eventElement.getAttribute("Type").equals("Ev_Custom") || eventElement.getAttribute("Type").equals("TRX_Sale")) {
+                        eventElement.setAttribute("storeId", storeId);
+                        String content = null;
+                        try {
+                            content = nodeToString(node);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                        rawList.add(content);
+                    }
+                }
+
             }
-
-            // Parse the XML file
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(inputStream);
-            logger.info("Exit - Method: getDoc");
-            return doc;
-
+            context.getLogger().log("Method: readRawMessageList - rawList size: "+ rawList.size());
+            return rawList;
         } catch (Exception ex) {
-            logger.error("Error occurred in Method: getDoc:",ex);
+            context.getLogger().log("Error occurred in Method: readRawMessageList: "+ex.getMessage());
+        } finally {
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            context.getLogger().log("EXIT - Method: readRawMessageList, Timestamp: "+endTime+", Duration: "+duration+"ms");
         }
         return null;
-    }
-    public static List<String> readRawMessageList(Document stldDoc) {
-        logger.info("ENTRY - Method: readRawMessageList");
-        List<String> rawList = new ArrayList<>();
-        String storeId = readRawMessageKey(stldDoc);
-
-        NodeList nodeList = stldDoc.getElementsByTagName("Event");
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Node node = nodeList.item(i);
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Element eventElement = (Element) node;
-
-                // Check if Type attribute is Ev_Custom
-                if (eventElement.getAttribute("Type").equals("Ev_Custom") ||
-                    eventElement.getAttribute("Type").equals("TRX_Sale")) {
-                    eventElement.setAttribute("storeId", storeId);
-                    String content = null;
-                    try {
-                        content = nodeToString(node);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                    rawList.add(content);
-                }
-            }
-
-        }
-        logger.info("EXIT - Method: readRawMessageList - rawList size: {}", rawList.size());
-        return rawList;
     }
 
     private static String nodeToString(Node node) throws Exception {
