@@ -2,6 +2,7 @@ package com.mcd;
 
 import com.mcd.model.Event;
 import com.mcd.service.XmlProcessingService;
+import org.apache.avro.generic.GenericRecord;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,11 +34,10 @@ public class XmlProcessingServiceTest {
             } else {
                 Path path = Paths.get(resource.toURI());
                 String xml = Files.readString(path);
-                System.out.println("v ==>"+xml);
                 Event event = xmlProcessingService.parseXmlEvent(xml);
                 System.out.println("event ==>"+event.toString());
                 assertNotNull(event);
-                byte[] averoFormat = xmlProcessingService.processEvent(event);
+                GenericRecord averoFormat = xmlProcessingService.processEvent(event);
                 assertNotNull(averoFormat);
 
             }
@@ -69,13 +69,4 @@ public class XmlProcessingServiceTest {
         }
     }
 
-    // Method to decode base64 data (you may need to implement your own decoding logic)
-    private static String decodeBase64Data(String base64Data) {
-        // Replace this with your actual decoding logic
-        // Example: Using java.util.Base64 for decoding
-        // byte[] decodedBytes = Base64.getDecoder().decode(base64Data);
-        // return new String(decodedBytes, StandardCharsets.UTF_8);
-
-        return base64Data; // Dummy return for illustration
-    }
 }

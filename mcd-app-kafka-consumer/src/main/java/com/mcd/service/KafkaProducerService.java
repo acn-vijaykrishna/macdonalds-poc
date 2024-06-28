@@ -23,6 +23,7 @@ public class KafkaProducerService {
     private static final Logger logger = LogManager.getLogger(KafkaProducerService.class);
 
     private final String SCHEMA_REGISTRY_URL = "http://localhost:8081";
+
     private final String schemaPath = "src/main/avro/event.asvc";
 
     private KafkaProducer<String, Object> kafkaProducer;
@@ -32,7 +33,6 @@ public class KafkaProducerService {
 
     @Value("${spring.kafka.topic.output}")
     private String outputTopic;
-
 
     @PostConstruct
     public void init() {
@@ -48,7 +48,7 @@ public class KafkaProducerService {
         kafkaProducer = new KafkaProducer<>(props);
     }
 
-    public void sendEvent(String key, byte[] value) {
+    public void sendEvent(String key, Object value) {
         try {
             ProducerRecord<String, Object> record = new ProducerRecord<>(outputTopic, key, value);
             Future<RecordMetadata> future = kafkaProducer.send(record);

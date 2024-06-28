@@ -1,6 +1,7 @@
 package com.mcd.service;
 
 import com.mcd.model.Event;
+import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -43,9 +44,10 @@ public class KafkaConsumerService {
             //Only Process Loyalty Customers
             if (event != null && event.getEvCustom() != null) {
                 String regId = event.getRegId();
-                byte[] averoFormat = xmlProcessingService.processEvent(event);
                 String key = storeId + "-" + regId;
-                kafkaProducerService.sendEvent(key, averoFormat);
+                GenericRecord avroFormat = xmlProcessingService.processEvent(event);
+                kafkaProducerService.sendEvent(key, avroFormat);
+
             } else {
                 logger.warn("com.mcd.model.Event parsing returned null for message: {}", message);
             }
