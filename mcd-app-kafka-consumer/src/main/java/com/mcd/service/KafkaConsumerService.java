@@ -18,6 +18,8 @@ public class KafkaConsumerService {
 
     @Autowired
     private XmlProcessingService xmlProcessingService;
+    @Autowired
+    private KafkaProducerService kafkaProducerService;
 
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
@@ -38,14 +40,14 @@ public class KafkaConsumerService {
         logger.info("Received message: Key = {}, Value = {}", storeId, message);
         try {
             Event event = xmlProcessingService.parseStringXmlEvent(message);
-            if (event != null) {
+            //Only Process Loyalty Customers
+            if (event != null && event.getEvCustom() != null) {
                 String regId = event.getRegId();
-                String averoFormat = xmlProcessingService.processEvent(event);
+                byte[] averoFormat = xmlProcessingService.processEvent(event);
                 String key = storeId + "-" + regId;
-                kafkaTemplate.send("${spring.kafka.topic.output}", key, averoFormat);
-                logger.info("Successfully sent message to topic: Key = {}, Value = {}", key, averoFormat);
+                kafkaProducerService.sendEvent(key, averoFormat);
             } else {
-                logger.warn("Event parsing returned null for message: {}", message);
+                logger.warn("com.mcd.model.Event parsing returned null for message: {}", message);
             }
         } catch (Exception e) {
             logger.error("Error processing message: Key = {}, Value = {}", storeId, message, e);

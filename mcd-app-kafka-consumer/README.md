@@ -1,6 +1,10 @@
 ## Maven Build & Package
 
+```jsunicoderegexp
 mvn clean package
+mvn test
+mvn clean install // to convert avro format to pojo classes
+```
 
 ## AWS Configure
 
@@ -100,3 +104,15 @@ Stopping Service and Tasks:
 aws ecs stop-task --cluster acn-mcd-ecs-app-cluster --task arn:aws:ecs:us-east-1:992382542338:task/acn-mcd-ecs-app-cluster/8dabbc88cc314f148e47318fbedf7ec2
 aws ecs update-service --cluster acn-mcd-ecs-app-cluster --service kafkaConsumerAppService --desired-count 0
 ```
+
+### Install Kafka
+
+```jsunicoderegexp
+curl -sL --http1.1 https://cnfl.io/cli | sh -s -- latest // Install confluent
+confluent login --save
+confluent environment use env-r0vy79
+confluent kafka cluster use lkc-k6y00p
+kafka-topics --bootstrap-server pkc-921jm.us-east-2.aws.confluent.cloud:9092 --list | grep curated_loyalty_transactions
+```
+
+

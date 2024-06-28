@@ -1,0 +1,51 @@
+{
+  "type": "record",
+  "name": "Event",
+  "namespace": "com.mcd.avro",
+  "fields": [
+    {
+      "name": "RegId",
+      "type": "string"
+    },
+    {
+      "name": "Time",
+      "type": "string"
+    },
+    {
+      "name": "Type",
+      "type": "string"
+    },
+    {
+      "name": "storeId",
+      "type": "string"
+    },
+    {
+      "name": "Ev_Custom",
+      "type": {
+        "type": "record",
+        "name": "EvCustom",
+        "namespace": "com.mcd.avro",
+        "fields": [
+          {
+            "name": "Info",
+            "type": {
+              "type": "record",
+              "name": "Info",
+              "namespace": "com.mcd.avro",
+              "fields": [
+                {
+                  "name": "code",
+                  "type": "string"
+                },
+                {
+                  "name": "data",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

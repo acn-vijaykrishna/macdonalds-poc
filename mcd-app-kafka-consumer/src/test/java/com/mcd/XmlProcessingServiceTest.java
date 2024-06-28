@@ -35,10 +35,9 @@ public class XmlProcessingServiceTest {
                 String xml = Files.readString(path);
                 Event event = xmlProcessingService.parseXmlEvent(xml);
                 assertNotNull(event);
-                String averoFormat = xmlProcessingService.processEvent(event);
+                byte[] averoFormat = xmlProcessingService.processEvent(event);
                 assertNotNull(averoFormat);
 
-                System.out.println("averoFormat ==>" + averoFormat);
             }
         } catch (Exception ex) {
             System.out.println("Exception" + ex);

@@ -10,6 +10,7 @@ public class Event {
     private String regId;
     private String type;
     private String time;
+    private String storeId;
     private EvCustom evCustom;
 
     @XmlAttribute(name = "RegId")
@@ -42,6 +43,15 @@ public class Event {
     @XmlElement(name = "Ev_Custom")
     public EvCustom getEvCustom() {
         return evCustom;
+    }
+
+    @XmlElement(name = "storeId")
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
     }
 
     public void setEvCustom(EvCustom evCustom) {
