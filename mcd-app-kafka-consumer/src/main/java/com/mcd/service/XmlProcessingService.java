@@ -26,28 +26,24 @@ public class XmlProcessingService {
 
     public Event parseStringXmlEvent(String xmlString) {
         logger.info("XML Processing parseStringXmlEvent: String XML = {}", xmlString);
-//        xmlString = "<com.mcd.model.Event RegId=\"1044\" Time=\"20240601121056\" Type=\"com.mcd.model.Ev_Custom\" storeId=\"25001000\">\n" +
-//                "    <com.mcd.model.Ev_Custom>\n" +
-//                "        <com.mcd.model.Info code=\"3605\" data=\"Jmx0Oz94bWwgdmVyc2lvbj0mcXVvdDsxLjAmcXVvdDsgZW5jb2Rpbmc9JnF1b3Q7VVRGLTgmcXVvdDs/Jmd0OyZsdDtpbmZvIG9yZGVyS2V5PSZxdW90O1BPUzAwNDU6ODA3ODA2MDkxJnF1b3Q7IHRhYmxlWm9uZU51bWJlcj0mcXVvdDsxODcmcXVvdDsgLyZndDs=\"/>\n" +
-//                "    </com.mcd.model.Ev_Custom>\n" +
-//                "</com.mcd.model.Event>";
         try {
-
             // Clean the XML string
             xmlString = xmlString.trim().replaceFirst("^([\\W]+)<", "<");
+
+            // Log the cleaned XML string
+            logger.info("Cleaned XML String: {}", xmlString);
 
             // Create JAXB context and unmarshaller
             JAXBContext context = JAXBContext.newInstance(Event.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
 
-            // Unmarshal XML string into com.mcd.model.Event object
             StringReader reader = new StringReader(xmlString);
             Event event = (Event) unmarshaller.unmarshal(reader);
             return event;
         } catch (JAXBException e) {
-            logger.error("JAXBException while parsing XML:{} ", xmlString, e);
+            logger.error("JAXBException while parsing XML: {} ", xmlString, e);
         } catch (Exception e) {
-            logger.error("Exception while parsing XML:{} ", xmlString, e);
+            logger.error("Exception while parsing XML: {} ", xmlString, e);
         }
         return null;
     }

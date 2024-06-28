@@ -19,9 +19,11 @@ aws configure
   --zip-file fileb://target/mcd-lambda-kafka-consumer-1.0-SNAPSHOT.jar
 
 - Deploy
-  aws lambda update-function-code --function-name KafkaConsumerLambda
-- --zip-file fileb://target/mcd-lambda-kafka-consumer-1.0-SNAPSHOT.jar
+```jsunicoderegexp
+aws lambda update-function-code --function-name KafkaConsumerLambda --zip-file fileb://target/mcd-lambda-kafka-consumer-1.0-SNAPSHOT.jar --cli-connect-timeout 60000
 
+```
+  
 ## Mac export command
 
 export AWS_ACCESS_KEY_ID=<aws key from secrets.txt>
