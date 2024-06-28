@@ -46,10 +46,8 @@ public class Event {
         return evCustom;
     }
 
-    @XmlElement(name = "storeId")
-    public String getStoreId() {
-        return storeId;
-    }
+    @XmlAttribute(name = "storeId")
+    public String getStoreId() {return storeId;}
 
     public void setStoreId(String storeId) {
         this.storeId = storeId;

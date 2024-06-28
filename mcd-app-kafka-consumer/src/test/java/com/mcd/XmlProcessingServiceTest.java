@@ -33,6 +33,7 @@ public class XmlProcessingServiceTest {
             } else {
                 Path path = Paths.get(resource.toURI());
                 String xml = Files.readString(path);
+                System.out.println("v ==>"+xml);
                 Event event = xmlProcessingService.parseXmlEvent(xml);
                 System.out.println("event ==>"+event.toString());
                 assertNotNull(event);
