@@ -55,7 +55,7 @@ public class KafkaProducerService {
         props.put(ProducerConfig.LINGER_MS_CONFIG, 1);
         props.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL);
         props.put("security.protocol", protocol);
-        props.put("sasl.mechanism", protocol);
+        props.put("sasl.mechanism", mechanism);
         props.put("sasl.jaas.config", jaasConfig);
         kafkaProducer = new KafkaProducer<>(props);
     }
