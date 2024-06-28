@@ -34,6 +34,7 @@ public class XmlProcessingServiceTest {
                 Path path = Paths.get(resource.toURI());
                 String xml = Files.readString(path);
                 Event event = xmlProcessingService.parseXmlEvent(xml);
+                System.out.println("event ==>"+event.toString());
                 assertNotNull(event);
                 byte[] averoFormat = xmlProcessingService.processEvent(event);
                 assertNotNull(averoFormat);

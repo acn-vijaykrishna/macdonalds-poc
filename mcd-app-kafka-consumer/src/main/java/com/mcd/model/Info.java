@@ -3,11 +3,11 @@ package com.mcd.model;
 import jakarta.xml.bind.annotation.XmlAttribute;
 
 
-
 public class Info {
 
     private String code;
     private String data;
+
 
     @XmlAttribute(name = "code")
     public String getCode() {
@@ -25,5 +25,13 @@ public class Info {
 
     public void setData(String data) {
         this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "Info{" +
+                "code='" + code + '\'' +
+                ", data='" + data + '\'' +
+                '}';
     }
 }

@@ -11,6 +11,7 @@ public class Event {
     private String type;
     private String time;
     private String storeId;
+
     private EvCustom evCustom;
 
     @XmlAttribute(name = "RegId")
@@ -57,4 +58,16 @@ public class Event {
     public void setEvCustom(EvCustom evCustom) {
         this.evCustom = evCustom;
     }
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "regId='" + regId + '\'' +
+                ", type='" + type + '\'' +
+                ", time='" + time + '\'' +
+                ", storeId='" + storeId + '\'' +
+                ", evCustom=" + evCustom +
+                '}';
+    }
+
 }
