@@ -34,6 +34,16 @@ public class KafkaProducerService {
     @Value("${spring.kafka.topic.output}")
     private String outputTopic;
 
+
+    @Value("${spring.kafka.producer.properties.sasl.jaas.config}")
+    private String jaasConfig;
+
+    @Value("${spring.kafka.producer.properties.security.protocol}")
+    private String protocol;
+
+    @Value("${spring.kafka.producer.properties.sasl.mechanism}")
+    private String mechanism;
+
     @PostConstruct
     public void init() {
         Properties props = new Properties();
@@ -44,17 +54,26 @@ public class KafkaProducerService {
         props.put(ProducerConfig.RETRIES_CONFIG, 10);
         props.put(ProducerConfig.LINGER_MS_CONFIG, 1);
         props.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL);
-
+        props.put("security.protocol", protocol);
+        props.put("sasl.mechanism", protocol);
+        props.put("sasl.jaas.config", jaasConfig);
         kafkaProducer = new KafkaProducer<>(props);
     }
 
     public void sendEvent(String key, Object value) {
         try {
             ProducerRecord<String, Object> record = new ProducerRecord<>(outputTopic, key, value);
-            Future<RecordMetadata> future = kafkaProducer.send(record);
+            Future<RecordMetadata> future = kafkaProducer.send(record, (metadata, exception) -> {
+                if (exception == null) {
+                    logger.info("Message sent successfully: {}", metadata.toString());
+                } else {
+                    logger.error("Error sending message: {}", exception.getMessage());
+                }
+            });
             RecordMetadata metadata = future.get();
             logger.info("Successfully sent message to topic: Topic ={} Key = {}, Value = {} Partition = {}, Offset = {}",
                     outputTopic, key, value, metadata.partition(), metadata.offset());
+
         } catch (Exception e) {
             logger.error("Error sending message to topic: Topic ={} Key = {}, Value = {}", outputTopic, key, value, e);
         }

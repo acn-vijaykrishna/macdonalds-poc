@@ -23,16 +23,18 @@ import java.io.StringReader;
 public class XmlProcessingService {
 
     private static final Logger logger = LogManager.getLogger(XmlProcessingService.class);
+    private static final String SCHEMA = "/event.avsc";
 
     public Event parseStringXmlEvent(String xmlString) {
         logger.info("XML Processing parseStringXmlEvent: String XML = {}", xmlString);
+        xmlString = "<Event RegId=\"1044\" Time=\"20240601121056\" Type=\"Ev_Custom\" storeId=\"25001000\">\n" +
+                "    <Ev_Custom>\n" +
+                "        <Info code=\"3605\" data=\"Jmx0Oz94bWwgdmVyc2lvbj0mcXVvdDsxLjAmcXVvdDsgZW5jb2Rpbmc9JnF1b3Q7VVRGLTgmcXVvdDs/Jmd0OyZsdDtpbmZvIG9yZGVyS2V5PSZxdW90O1BPUzAwNDU6ODA3ODA2MDkxJnF1b3Q7IHRhYmxlWm9uZU51bWJlcj0mcXVvdDsxODcmcXVvdDsgLyZndDs=\"/>\n" +
+                "    </Ev_Custom>\n" +
+                "</Event>";
         try {
             // Clean the XML string
             xmlString = xmlString.trim().replaceFirst("^([\\W]+)<", "<");
-
-            // Log the cleaned XML string
-            logger.info("Cleaned XML String: {}", xmlString);
-
             // Create JAXB context and unmarshaller
             JAXBContext context = JAXBContext.newInstance(Event.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -59,7 +61,6 @@ public class XmlProcessingService {
         }
     }
 
-
     public GenericRecord processEvent(Event event) {
         try {
             logger.info("XML Processing Event: Custom = {}, Info = {}", event.toString());
@@ -73,15 +74,10 @@ public class XmlProcessingService {
     }
 
     private GenericRecord convertToAvroFormat(Event event) throws IOException {
-        logger.info("Convert To Avro Format");
-        Schema schema = new Schema.Parser().parse(AvroConverter.class.getResourceAsStream("/event.avsc"));
-        logger.info("schema ==>" + schema);
+        Schema schema = new Schema.Parser().parse(AvroConverter.class.getResourceAsStream(SCHEMA));
         AvroConverter converter = new AvroConverter(schema);
-        logger.info("converter ==>" + converter);
 
         byte[] avroData = converter.toAvro(event);
-        logger.info("avroData ==>" + avroData);
-
         // Convert byte[] back to GenericRecord
         try (SeekableByteArrayInput input = new SeekableByteArrayInput(avroData)) {
             DatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);

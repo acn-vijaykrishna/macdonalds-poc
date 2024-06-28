@@ -49,11 +49,7 @@ public class XmlProcessingServiceTest {
 
     @Test
     public void testProcessStringEvent() {
-        String xmlString = "<Event RegId=\"1044\" Time=\"20240601121056\" Type=\"Ev_Custom\" storeId=\"25001000\">\n" +
-                "    <Ev_Custom>\n" +
-                "        <Info code=\"3605\" data=\"Jmx0Oz94bWwgdmVyc2lvbj0mcXVvdDsxLjAmcXVvdDsgZW5jb2Rpbmc9JnF1b3Q7VVRGLTgmcXVvdDs/Jmd0OyZsdDtpbmZvIG9yZGVyS2V5PSZxdW90O1BPUzAwNDU6ODA3ODA2MDkxJnF1b3Q7IHRhYmxlWm9uZU51bWJlcj0mcXVvdDsxODcmcXVvdDsgLyZndDs=\"/>\n" +
-                "    </Ev_Custom>\n" +
-                "</Event>";
+        String xmlString = "<Event RegId=\"496\" Time=\"20240601122321\" Type=\"Ev_Custom\" storeId=\"25001000\">\n          \n    <Ev_Custom>\n                \n        <Info code=\"0000\" data=\"Created%7C%7B%22businessDate%22%3A%2220240601%22%2C%22externalCustomerRef%22%3A%22%22%2C%22externalOrderRef%22%3A%221m2g0hyhdy%22%2C%22identificationType%22%3A%22SCANN%22%2C%22orderDate%22%3A%222024-06-01T12%3A22%3A55.000%2B0000%22%2C%22terminalId%22%3A%22KIOSK%22%2C%22burns%22%3A%5B%7B%22rewardRef%22%3A%2283874599%22%2C%22rewardType%22%3A%22POINT%22%2C%22pmix%22%3A%2213464%22%2C%22usedPoints%22%3A%2275%22%7D%5D%7D\"/>\n              \n    </Ev_Custom>\n        \n</Event>\n";
 
         try {
             // Create JAXB context and unmarshaller

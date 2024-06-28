@@ -26,12 +26,6 @@ public class KafkaConsumerService {
     private KafkaTemplate<String, Object> kafkaTemplate;
 
 
-    @PostConstruct
-    public void init() {
-        logger.info("Kafka Username: {}", System.getenv("KAFKA_USERNAME"));
-        logger.info("Kafka Password: {}", System.getenv("KAFKA_PASSWORD"));
-    }
-
     @KafkaListener(topics = "${spring.kafka.topic.input}", groupId = "${spring.kafka.consumer.group-id}")
     public void listen(ConsumerRecord<String, String> record) {
         long startTime = System.currentTimeMillis();
