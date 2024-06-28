@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.PostConstruct;
-
 @Service
 public class KafkaConsumerService {
 

@@ -49,11 +49,12 @@ public class KafkaProducerService {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName());
+//        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName());
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.ACKS_CONFIG, "1");
         props.put(ProducerConfig.RETRIES_CONFIG, 10);
         props.put(ProducerConfig.LINGER_MS_CONFIG, 1);
-        props.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL);
+//        props.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL);
         props.put("security.protocol", protocol);
         props.put("sasl.mechanism", mechanism);
         props.put("sasl.jaas.config", jaasConfig);
@@ -62,7 +63,8 @@ public class KafkaProducerService {
 
     public void sendEvent(String key, Object value) {
         try {
-            ProducerRecord<String, Object> record = new ProducerRecord<>(outputTopic, key, value);
+            logger.info("value.toString(): {}", value.toString());
+            ProducerRecord<String, Object> record = new ProducerRecord<>(outputTopic, key, value.toString());
             Future<RecordMetadata> future = kafkaProducer.send(record, (metadata, exception) -> {
                 if (exception == null) {
                     logger.info("Message sent successfully: {}", metadata.toString());

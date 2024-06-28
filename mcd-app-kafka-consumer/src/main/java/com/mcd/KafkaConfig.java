@@ -44,7 +44,7 @@ public class KafkaConfig {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put("security.protocol", protocol);
-        props.put("sasl.mechanism", protocol);
+        props.put("sasl.mechanism", mechanism);
         props.put("sasl.jaas.config", jaasConfig);
         return new DefaultKafkaConsumerFactory<>(props);
     }
@@ -73,8 +73,4 @@ public class KafkaConfig {
         return new KafkaTemplate<>(producerFactory());
     }
 
-    @Bean
-    public NewTopic topic() {
-        return new NewTopic("processed-events", 1, (short) 1);
-    }
 }
