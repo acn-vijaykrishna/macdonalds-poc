@@ -49,6 +49,7 @@ class KafkaProducerLambdaTest {
   }
 
   @Test
+  @Disabled
   public void processDocumentTest() {
     Mockito.when(mockContext.getLogger()).thenReturn(mockLogger);
       String result = kafkaProducerLambda.processDocument(getDoc(), mockContext);

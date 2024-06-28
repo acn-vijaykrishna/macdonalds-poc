@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -22,6 +23,7 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.concurrent.Future;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -71,15 +73,15 @@ public class KafkaProducerLambda implements RequestHandler<Object, String> {
             ProducerRecord<String, String> kafkaRecord = new ProducerRecord<>(TOPIC_NAME, rawMessageKey, loyalty);
 
             try {
-                producer.send(kafkaRecord, (metadata, exception) -> {
+                Future<RecordMetadata> future = producer.send(kafkaRecord, (metadata, exception) -> {
                     if (exception == null) {
-                        context.getLogger().log("Message sent to topic: "
-                            +metadata.topic()+" partition: "+metadata.partition()+" offset: "
-                            + metadata.offset());
+                        context.getLogger().log("Message sent successfully: " + metadata.toString());
                     } else {
-                        context.getLogger().log("Error sending message: "+ exception.getMessage());
+                        context.getLogger().log("Error sending message: " + exception.getMessage());
                     }
                 });
+                RecordMetadata metadata = future.get();
+                context.getLogger().log("Message sent to topic: " + metadata.topic() + " partition: " + metadata.partition() + " offset: " + metadata.offset());
             } catch (Exception e) {
                 context.getLogger().log("Error producing messages: "+ e.getMessage());
                 break;
@@ -109,7 +111,7 @@ public class KafkaProducerLambda implements RequestHandler<Object, String> {
      */
     public Properties readConfig(String configFile, Context context) throws IOException {
         long startTime = System.currentTimeMillis();
-        context.getLogger().log("ENTRY - Method: readS3Object, Timestamp: "+ startTime);
+        context.getLogger().log("ENTRY - Method: readConfig, Timestamp: "+ startTime);
         Properties props = new Properties();
 
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(configFile)) {

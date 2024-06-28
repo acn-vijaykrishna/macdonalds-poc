@@ -142,7 +142,7 @@ public class S3EventProcessor {
 
             ZipEntry entry;
             while ((entry = zipInputStream.getNextEntry()) != null) {
-                context.getLogger().log("Zip File Entry: {}" + entry.getName());
+                context.getLogger().log("Zip File Entry: " + entry.getName());
                 if (!entry.isDirectory() && entry.getName().contains("STLD")) {
                     Scanner scanner = new Scanner(zipInputStream);
                     String xmlContent = scanner.useDelimiter("\\A").next();
