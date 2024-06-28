@@ -1,7 +1,6 @@
 package com.mac;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
