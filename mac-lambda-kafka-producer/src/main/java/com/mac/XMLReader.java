@@ -99,7 +99,7 @@ public class XMLReader {
                 }
 
             }
-            context.getLogger().log("EXIT - Method: readRawMessageList - rawList size: "+ rawList.size());
+            context.getLogger().log("Method: readRawMessageList - rawList size: "+ rawList.size());
             return rawList;
         } catch (Exception ex) {
             context.getLogger().log("Error occurred in Method: readRawMessageList: "+ex.getMessage());
