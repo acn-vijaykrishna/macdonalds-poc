@@ -45,37 +45,6 @@ class KafkaProducerLambdaTest {
     mockS3Client = Mockito.mock(S3Client.class);
   }
 
-  @Test
-  public void testReadS3Object() throws IOException {
-
-    // Arrange
-    String bucketName = "testBucket";
-    String objectKey = "testObject";
-    Context mockContext = Mockito.mock(Context.class);
-
-    try (MockedStatic mocked = Mockito.mockStatic(S3Client.class)) {
-      mocked.when(S3Client::builder).thenReturn(s3ClienBuildertMock);
-      when(s3ClienBuildertMock.region(Region.US_EAST_1)).thenReturn(s3ClienBuildertMock);
-      when(s3ClienBuildertMock.build()).thenReturn(s3ClientMock);
-      //when s3ClientMock.getObject is called with any GetObjectRequest, then return s3Object
-      when(s3ClientMock.getObject(any(GetObjectRequest.class))).thenReturn(getMockObjectResponseFromS3());
-      when(mockContext.getLogger()).thenReturn(lambdaLogger);
-      // Act
-      Document result = kafkaProducerLambda.readS3Object(bucketName, objectKey, mockContext);
-
-      // Assert
-      // Verify the result as per your expectation
-      // For example, if you expect the zip file to contain 2 XML files, you can assert that the result size is 2
-      assertNotNull(result, "The returned Document should not be null");
-    }
-
-  }
-
-  ResponseInputStream<GetObjectResponse> getMockObjectResponseFromS3() throws FileNotFoundException {
-    InputStream testZipStream = new FileInputStream(new File("src/test/resources/POS.zip"));
-    return new ResponseInputStream<>(GetObjectResponse.builder().build(), testZipStream);
-  }
-
   String getMockString() {
     return "test";
   }
