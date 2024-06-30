@@ -53,7 +53,9 @@ public class KafkaProducerService {
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.ACKS_CONFIG, "1");
         props.put(ProducerConfig.RETRIES_CONFIG, 10);
-        props.put(ProducerConfig.LINGER_MS_CONFIG, 1);
+//        number of milliseconds a producer is willing to wait before sending a batch out.
+//        props.put(ProducerConfig.LINGER_MS_CONFIG, 1);
+        //TODO: Enable this when Schema registry is available
 //        props.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL);
         props.put("security.protocol", protocol);
         props.put("sasl.mechanism", mechanism);

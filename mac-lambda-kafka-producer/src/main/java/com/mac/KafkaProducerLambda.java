@@ -124,6 +124,7 @@ public class KafkaProducerLambda implements RequestHandler<Object, String> {
         // Add Kafka producer specific properties
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        props.put(ProducerConfig.ACKS_CONFIG, "1");
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
         context.getLogger().log("EXIT - Method: readConfig, Timestamp: "+endTime+", Duration: "+duration+"ms");
