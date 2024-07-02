@@ -27,7 +27,7 @@ Current API hosted:
   - Navigate to the directory where the jar is copied
   - Run the following command to launch the app
     ```bash
-    nohup java -jar mcd.jar
+    nohup java -jar mcd.jar &
     ```
   - Running the app in nohup will ensure it keeps running in the background even after the SSM session terminates
 - To check if the app is running, use the following command
