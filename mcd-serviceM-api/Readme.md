@@ -21,7 +21,7 @@ Current API hosted:
   - Navigate to the directory where the jar needs to be copied (current jar is in /opt/mcd-serviceM-jar/mcd.jar)
   - Use the curl command with the presigned url of the jar in s3 to copy the jar to the EC2 instance
     ```bash
-    curl -o mcd.jar <presigned-url>
+    curl <presigned-url> -o mcd-sessionM.jar
     ```
 - To launch the app perform the following steps:
   - Navigate to the directory where the jar is copied
@@ -32,7 +32,7 @@ Current API hosted:
   - Running the app in nohup will ensure it keeps running in the background even after the SSM session terminates
 - To check if the app is running, use the following command
   ```bash
-  ps -ef | grep mcd.jar
+  ps -ef | grep java
   ```
 - To stop the app, use the following command
   ```bash
