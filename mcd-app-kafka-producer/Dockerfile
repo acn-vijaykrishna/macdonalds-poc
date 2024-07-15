@@ -21,7 +21,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the JAR file from the builder stage
-COPY --from=builder /app/target/mcd-app-kafka-consumer-1.0.0.jar /app/kafka-consumer.jar
+COPY --from=builder /app/target/mcd-app-kafka-producer-1.0.0.jar /app/kafka-producer.jar
 
 # Copy the application properties file
 COPY --from=builder /app/src/main/resources/application.properties /app/application.properties
@@ -33,4 +33,4 @@ RUN ls -l /app/
 EXPOSE 8080
 
 # Command to run the JAR file
-ENTRYPOINT ["java", "-Dspring.config.location=file:/app/application.properties", "-jar", "kafka-consumer.jar"]
+ENTRYPOINT ["java", "-Dspring.config.location=file:/app/application.properties", "-jar", "kafka-producer.jar"]

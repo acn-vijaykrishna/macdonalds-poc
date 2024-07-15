@@ -1,28 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
+<Configuration status="warn" name="AWSLogging" packages="com.kdgregory.log4j.aws">
     <Appenders>
-        <!-- Console Appender -->
+        <AWSAppender name="CloudWatch" region="us-east-1"
+                     logGroup="/aws/ecs/containerinsights/acn-mcd-ecs-app-cluster"
+                     logStream="kafka-consumer"
+                     synchronous="true">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n"/>
+        </AWSAppender>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n"/>
         </Console>
-
-        <!-- CloudWatch Appender -->
-        <Appender type="AWS" name="CloudWatch">
-            <Region>us-east-1</Region>
-            <LogGroupName>/aws/ecs/containerinsights/acn-mcd-ecs-app-cluster</LogGroupName>
-            <LogStreamName>kafka-consumer</LogStreamName>
-            <Layout type="PatternLayout">
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
-            </Layout>
-        </Appender>
     </Appenders>
-
     <Loggers>
         <Root level="info">
-            <!-- Use Console Appender for local environment -->
-            <AppenderRef ref="Console"/>
-            <!-- Use CloudWatch Appender for AWS environment -->
             <AppenderRef ref="CloudWatch"/>
+            <AppenderRef ref="Console"/>
         </Root>
+        <Logger name="com.mcd" level="info" additivity="false">
+            <AppenderRef ref="CloudWatch"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
     </Loggers>
 </Configuration>

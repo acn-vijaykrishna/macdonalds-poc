@@ -31,6 +31,9 @@ public class KafkaLambdaHandler implements RequestHandler<Object, String> {
 
     @Override
     public String handleRequest(Object input, Context context) {
+        long startTime = System.currentTimeMillis();
+
+        context.getLogger().log("ENTRY - Method: Curated Topic Consumer, Timestamp: " + startTime);
         // Set up Kafka consumer properties
         Properties props;
 
@@ -61,6 +64,9 @@ public class KafkaLambdaHandler implements RequestHandler<Object, String> {
         } catch (Exception e) {
             context.getLogger().log("Error consuming messages: " + e.getMessage());
         } finally {
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            context.getLogger().log("EXIT - Method: Method: Curated Topic Consumer, Timestamp: "+ endTime +", Duration: "+ duration +"ms");
             consumer.close();
         }
         // Return the collected messages
