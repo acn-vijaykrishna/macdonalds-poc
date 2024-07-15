@@ -1,4 +1,4 @@
-package com.mac;
+package com.mcd;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,7 +17,7 @@ import java.util.concurrent.Future;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class KafkaProducerTest {
-    private static final String TOPIC_NAME = "mac_pos";
+    private static final String TOPIC_NAME = "raw_STLD_restaurant_transaction";
     @Test
     public void testProduceMessage() {
         // Define the Kafka producer properties

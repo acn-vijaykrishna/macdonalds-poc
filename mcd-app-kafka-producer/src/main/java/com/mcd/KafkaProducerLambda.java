@@ -1,18 +1,15 @@
-package com.mac;
+package com.mcd;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
-import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.w3c.dom.Document;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.Future;
 
 /**
@@ -27,45 +24,13 @@ import java.util.concurrent.Future;
  */
 public class KafkaProducerLambda implements RequestHandler<Object, String> {
 
-    private static final String TOPIC_NAME = "raw_STLD_restaurant_transaction";
-
-
-    private KafkaProducer<String, String> kafkaProducer;
-
-    @Value("${spring.kafka.bootstrap-servers}")
-    private String bootstrapServers;
 
     @Value("${spring.kafka.topic.output}")
     private String outputTopic;
 
+    @Autowired
+    private KafkaProducer<String, String> kafkaProducer;
 
-    @Value("${spring.kafka.producer.properties.sasl.jaas.config}")
-    private String jaasConfig;
-
-    @Value("${spring.kafka.producer.properties.security.protocol}")
-    private String protocol;
-
-    @Value("${spring.kafka.producer.properties.sasl.mechanism}")
-    private String mechanism;
-
-    @PostConstruct
-    public void init() {
-        Properties props = new Properties();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-//        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName());
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        props.put(ProducerConfig.ACKS_CONFIG, "1");
-        props.put(ProducerConfig.RETRIES_CONFIG, 10);
-//        number of milliseconds a producer is willing to wait before sending a batch out.
-//        props.put(ProducerConfig.LINGER_MS_CONFIG, 1);
-        //TODO: Enable this when Schema registry is available
-//        props.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL);
-        props.put("security.protocol", protocol);
-        props.put("sasl.mechanism", mechanism);
-        props.put("sasl.jaas.config", jaasConfig);
-        kafkaProducer = new KafkaProducer<>(props);
-    }
 
     /**
      * Processes an S3 event and sends the data to a Kafka topic.
@@ -88,7 +53,7 @@ public class KafkaProducerLambda implements RequestHandler<Object, String> {
         List<String> rawMessageList = XMLReader.readRawMessageList(stldDoc, context);
 
         for (String loyalty : rawMessageList) {
-            ProducerRecord<String, String> kafkaRecord = new ProducerRecord<>(TOPIC_NAME, rawMessageKey, loyalty);
+            ProducerRecord<String, String> kafkaRecord = new ProducerRecord<>(outputTopic, rawMessageKey, loyalty);
 
             try {
                 Future<RecordMetadata> future = kafkaProducer.send(kafkaRecord, (metadata, exception) -> {
@@ -110,7 +75,7 @@ public class KafkaProducerLambda implements RequestHandler<Object, String> {
         long duration = endTime - startTime;
         context.getLogger().log("EXIT - Method: processDocument, Timestamp: " + endTime + ", Duration: " + duration + "ms");
 
-        return "Processed S3 event and sent to Kafka topic: " + TOPIC_NAME;
+        return "Processed S3 event and sent to Kafka topic: " + outputTopic;
     }
 
 

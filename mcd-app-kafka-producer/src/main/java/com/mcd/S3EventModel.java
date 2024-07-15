@@ -1,4 +1,4 @@
-package com.mac;
+package com.mcd;
 
 public class S3EventModel {
 

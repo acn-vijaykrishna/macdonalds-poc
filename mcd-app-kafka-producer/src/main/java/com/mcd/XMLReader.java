@@ -1,4 +1,4 @@
-package com.mac;
+package com.mcd;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import org.w3c.dom.Document;

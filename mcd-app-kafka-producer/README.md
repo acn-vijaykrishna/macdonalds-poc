@@ -3,6 +3,7 @@
 ```jsunicoderegexp
 mvn clean package
 mvn clean install
+mvn spring-boot:run
 mvn test
 mvn clean install // to convert avro format to pojo classes
 ```
