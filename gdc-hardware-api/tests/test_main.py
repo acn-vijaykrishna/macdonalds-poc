@@ -9,8 +9,8 @@ class TestHardwareManagement(unittest.TestCase):
 
     def test_create_hardware(self):
         response = self.app.post('/create_hardware', json={
-            'project_id': 'your-project-id',
-            'location': 'your-location',
+            'project_id': '001',
+            'location': '1001',
             'hardware_body': {
                 "name": "example-hardware",
                 "displayName": "Example Hardware",
@@ -57,8 +57,8 @@ class TestHardwareManagement(unittest.TestCase):
 
     def test_get_hardware(self):
         response = self.app.get('/get_hardware', query_string={
-            'project_id': 'your-project-id',
-            'location': 'your-location',
+            'project_id': '001',
+            'location': '1001',
             'hardware_id': 'your-hardware-id'
         })
         self.assertEqual(response.status_code, 200)

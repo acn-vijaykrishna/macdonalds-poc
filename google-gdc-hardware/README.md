@@ -31,8 +31,11 @@ It correctly bundles React in production mode and optimizes the build for the be
 npm install axios react-hook-form google-auth-library
 npm install react-app-rewired crypto-browserify https-browserify stream-http stream-browserify path-browserify os-browserify querystring-es3 process buffer
 
-### start
+### Install & Start
+```
+npm i
 npm start
+```
 
 ### Authenticate
 
