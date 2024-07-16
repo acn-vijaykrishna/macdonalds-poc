@@ -24,3 +24,9 @@ python src/main.py
 ```
 git reset HEAD~1
 ```
+
+### API Reference Documentation:
+
+REST: https://cloud.google.com/distributed-cloud/edge/latest/docs/reference/hardware/rest
+Documentation:
+https://cloud.google.com/distributed-cloud/edge/latest/docs/reference/hardware/rest/v1alpha/projects.locations.hardware
